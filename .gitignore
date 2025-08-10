@@ -193,5 +193,7 @@ Thumbs.db
 /client/node_modules
 /client/.nuxt
 /client/.output
+/client/.env
 
 /server/node_modules
+/server/.env

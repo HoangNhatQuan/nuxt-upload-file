@@ -1,101 +1,11 @@
-const { createClient } = require("@supabase/supabase-js");
+const { supabase, BUCKET_NAME } = require("../config/database");
 const { v4: uuidv4 } = require("uuid");
 const path = require("path");
 
-// Initialize Supabase client with service role key (bypasses RLS)
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY,
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false,
-    },
-  }
-);
-
-const BUCKET_NAME = process.env.SUPABASE_BUCKET || "files";
-
-// Cloud storage configuration
-const CLOUD_MAX_FILE_BYTES =
-  parseInt(process.env.CLOUD_MAX_FILE_BYTES) || 50 * 1024 * 1024; // 50MB default
-const CLOUD_PROVIDER = process.env.CLOUD_PROVIDER || "supabase";
-
-// Get upload configuration for client
-const getUploadConfig = () => {
-  return {
-    maxFileSize: CLOUD_MAX_FILE_BYTES,
-    maxFileSizeMB: Math.round(CLOUD_MAX_FILE_BYTES / (1024 * 1024)),
-    provider: CLOUD_PROVIDER,
-    allowedMimeTypes: {
-      images: [
-        "image/jpeg",
-        "image/jpg",
-        "image/png",
-        "image/gif",
-        "image/webp",
-        "image/svg+xml",
-        "image/bmp",
-        "image/tiff",
-        "image/ico",
-      ],
-      videos: [
-        "video/mp4",
-        "video/avi",
-        "video/mov",
-        "video/quicktime",
-        "video/wmv",
-        "video/flv",
-        "video/webm",
-        "video/mkv",
-        "video/3gp",
-        "video/ogg",
-        "video/m4v",
-        "video/x-msvideo",
-        "video/x-matroska",
-      ],
-      audio: [
-        "audio/mpeg",
-        "audio/mp3",
-        "audio/wav",
-        "audio/ogg",
-        "audio/aac",
-        "audio/flac",
-        "audio/wma",
-        "audio/m4a",
-        "audio/opus",
-        "audio/x-wav",
-        "audio/x-m4a",
-      ],
-      documents: [
-        "application/pdf",
-        "application/msword",
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        "application/vnd.ms-excel",
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        "application/vnd.ms-powerpoint",
-        "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-        "text/plain",
-        "text/csv",
-        "application/rtf",
-        "application/json",
-        "application/xml",
-        "text/xml",
-        "application/zip",
-        "application/x-rar-compressed",
-        "application/x-7z-compressed",
-      ],
-    },
-    maxFilesPerRequest: 10,
-    bucketName: BUCKET_NAME,
-  };
-};
-
-// Generate a stable key strategy: userId/yyyy/MM/uuid.ext
-const generateKey = (originalName, userId = "anonymous") => {
+// Generate a stable key strategy: uuid.ext
+const generateKey = (originalName) => {
   const ext = path.extname(originalName);
   const uuid = uuidv4();
-
   return `${uuid}${ext}`;
 };
 
@@ -108,7 +18,7 @@ const uploadFile = async ({
   checksum = null,
 }) => {
   try {
-    const key = generateKey(file.originalname, userId);
+    const key = generateKey(file.originalname);
 
     const { data, error } = await supabase.storage
       .from(BUCKET_NAME)
@@ -271,6 +181,5 @@ module.exports = {
   getFileUrl,
   listFiles,
   getFileMetadata,
-  getUploadConfig,
-  BUCKET_NAME,
+  generateKey,
 };
