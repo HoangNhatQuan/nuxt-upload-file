@@ -46,6 +46,19 @@ A modern file upload application built with Nuxt 3, featuring a comprehensive up
 - Node.js 18+
 - pnpm (recommended) or npm
 
+### Environment Setup
+
+1. **Copy environment file**:
+   ```bash
+   cp .env.example .env
+   ```
+
+2. **Configure API URL** (if needed):
+   ```bash
+   # Default: http://localhost:3001/api
+   API_BASE_URL=http://localhost:3001/api
+   ```
+
 ### Installation
 
 1. **Install dependencies**:

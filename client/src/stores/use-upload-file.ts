@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia';
 import { onMounted, ref, computed } from 'vue';
 
-import type { UploadedFile } from '../apis/api';
-import { ApiService } from '../apis/api';
+import type { UploadedFile } from '../composables/useApi';
+import { useApi } from '../composables/useApi';
 
 export interface QueuedFile {
   id: string;
@@ -14,6 +14,7 @@ export interface QueuedFile {
 }
 
 export const useUploadFile = defineStore('upload-file', () => {
+  const { getFiles, uploadFile, deleteFile: apiDeleteFile } = useApi();
   const uploadedFiles = ref<UploadedFile[]>([]);
   const queuedFiles = ref<QueuedFile[]>([]);
   const isUploading = ref(false);
@@ -24,7 +25,7 @@ export const useUploadFile = defineStore('upload-file', () => {
   const loadFiles = async () => {
     isLoading.value = true;
     try {
-      const response = await ApiService.getFiles();
+      const response = await getFiles();
       uploadedFiles.value = response.files;
     } catch (err) {
       console.error('Failed to load files:', err);
@@ -105,7 +106,7 @@ export const useUploadFile = defineStore('upload-file', () => {
           queuedFile.progress = 0;
 
           try {
-            const _response = await ApiService.uploadFile(queuedFile.file);
+            const _response = await uploadFile(queuedFile.file);
 
             // Simulate progress during upload
             const progressInterval = setInterval(() => {
@@ -153,7 +154,7 @@ export const useUploadFile = defineStore('upload-file', () => {
   // Delete uploaded file
   const deleteFile = async (filename: string) => {
     try {
-      await ApiService.deleteFile(filename);
+      await apiDeleteFile(filename);
       uploadedFiles.value = uploadedFiles.value.filter(
         (file) => file.filename !== filename,
       );

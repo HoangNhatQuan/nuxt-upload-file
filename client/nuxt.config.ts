@@ -2,6 +2,12 @@
 export default defineNuxtConfig({
   compatibilityDate: '2025-08-10',
   devtools: { enabled: true },
+  
+  runtimeConfig: {
+    public: {
+      apiBaseUrl: process.env.NUXT_API_BASE_URL || 'http://localhost:3001/api',
+    },
+  },
   app: {
     head: {
       titleTemplate: 'File Uploader',

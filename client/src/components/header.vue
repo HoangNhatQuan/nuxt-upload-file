@@ -28,7 +28,7 @@ const isDark = computed({
       <div class="flex items-center gap-2">
         <UButton
           variant="soft"
-          to="https://github.com/bandabahariputra/nuxt-file-upload.git"
+          to="https://github.com/HoangNhatQuan/nuxt-upload-file"
         >
           <GithubLogoIcon class="w-5" />
         </UButton>
