@@ -28,6 +28,7 @@ export const useUploadFile = defineStore('upload-file', () => {
       uploadedFiles.value = response.files;
     } catch (err) {
       console.error('Failed to load files:', err);
+      error.value = 'Failed to load files';
     } finally {
       isLoading.value = false;
     }

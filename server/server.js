@@ -78,6 +78,7 @@ const fileFilter = (req, file, cb) => {
       "video/mp4",
       "video/avi",
       "video/mov",
+      "video/quicktime",
       "video/wmv",
       "video/flv",
       "video/webm",
@@ -85,6 +86,8 @@ const fileFilter = (req, file, cb) => {
       "video/3gp",
       "video/ogg",
       "video/m4v",
+      "video/x-msvideo",
+      "video/x-matroska",
     ],
     // Audio
     audio: [
@@ -97,6 +100,8 @@ const fileFilter = (req, file, cb) => {
       "audio/wma",
       "audio/m4a",
       "audio/opus",
+      "audio/x-wav",
+      "audio/x-m4a",
     ],
     // Documents
     documents: [
@@ -162,15 +167,15 @@ const validateUpload = [
 
 // Routes
 app.get("/api/health", (req, res) => {
-  res.json({ 
-    status: "OK", 
+  res.json({
+    status: "OK",
     message: "Server is running",
     config: {
       maxFileSize: `${Math.round(CLOUD_MAX_FILE_BYTES / (1024 * 1024))}MB`,
       maxFilesPerRequest: 10,
       provider: CLOUD_PROVIDER,
-      bucket: process.env.SUPABASE_BUCKET || "files"
-    }
+      bucket: process.env.SUPABASE_BUCKET || "files",
+    },
   });
 });
 
@@ -196,8 +201,22 @@ app.get("/api/files", async (req, res) => {
       offset: parseInt(offset),
     });
 
+    // Transform the data to match the client's expected format
+    const transformedFiles = result.items.map((item) => ({
+      filename: item.key || item.name,
+      originalName: item.originalName || item.name,
+      size: item.size,
+      mimetype: item.contentType,
+      uploadDate: item.updatedAt,
+      updatedAt: item.updatedAt,
+      description: item.description || "",
+      url: `https://ougcutnevvvrbucgxgla.supabase.co/storage/v1/object/public/kinobi/${
+        item.key || item.name
+      }`,
+    }));
+
     res.json({
-      files: result.items,
+      files: transformedFiles,
       total: result.total,
       nextOffset: result.nextOffset,
     });
@@ -226,7 +245,7 @@ app.post(
       console.log("Upload request received:", {
         filesCount: req.files ? req.files.length : 0,
         body: req.body,
-        headers: req.headers['content-type']
+        headers: req.headers["content-type"],
       });
       next();
     });
@@ -240,9 +259,9 @@ app.post(
       }
 
       if (!req.files || req.files.length === 0) {
-        return res.status(400).json({ 
+        return res.status(400).json({
           error: "No files uploaded",
-          message: "Please select at least one file to upload"
+          message: "Please select at least one file to upload",
         });
       }
 
@@ -259,9 +278,7 @@ app.post(
             .digest("hex");
 
           // Sanitize filename
-          const sanitizedFilename = path
-            .basename(file.originalname)
-            .replace(/[^a-zA-Z0-9.-]/g, "_");
+          const sanitizedFilename = path.basename(file.originalname);
 
           // Upload to cloud storage
           const result = await uploadFile({
@@ -270,7 +287,7 @@ app.post(
               originalname: sanitizedFilename,
             },
             contentType: file.mimetype,
-            description: req.body.description || "",
+            description: sanitizedFilename,
             checksum: checksum,
           });
 

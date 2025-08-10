@@ -43,6 +43,7 @@ const getUploadConfig = () => {
         "video/mp4",
         "video/avi",
         "video/mov",
+        "video/quicktime",
         "video/wmv",
         "video/flv",
         "video/webm",
@@ -50,6 +51,8 @@ const getUploadConfig = () => {
         "video/3gp",
         "video/ogg",
         "video/m4v",
+        "video/x-msvideo",
+        "video/x-matroska",
       ],
       audio: [
         "audio/mpeg",
@@ -61,6 +64,8 @@ const getUploadConfig = () => {
         "audio/wma",
         "audio/m4a",
         "audio/opus",
+        "audio/x-wav",
+        "audio/x-m4a",
       ],
       documents: [
         "application/pdf",
@@ -88,13 +93,10 @@ const getUploadConfig = () => {
 
 // Generate a stable key strategy: userId/yyyy/MM/uuid.ext
 const generateKey = (originalName, userId = "anonymous") => {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, "0");
   const ext = path.extname(originalName);
   const uuid = uuidv4();
 
-  return `${userId}/${year}/${month}/${uuid}${ext}`;
+  return `${uuid}${ext}`;
 };
 
 // Upload file to Supabase storage

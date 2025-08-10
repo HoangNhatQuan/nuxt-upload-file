@@ -6,6 +6,7 @@ export interface UploadedFile {
   size: number;
   mimetype?: string;
   uploadDate: string;
+  updatedAt: string;
   description: string;
   url: string;
 }

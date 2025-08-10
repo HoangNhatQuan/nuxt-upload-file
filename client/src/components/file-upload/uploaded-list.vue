@@ -59,7 +59,7 @@ const getFileIcon = (mimetype?: string): string => {
         >
           <img
             v-if="item.mimetype?.startsWith('image/')"
-            :src="item.url"
+            :src="`https://ougcutnevvvrbucgxgla.supabase.co/storage/v1/object/public/kinobi/${item.filename}`"
             :alt="item.originalName"
             class="h-full w-full object-cover"
           />
@@ -72,7 +72,7 @@ const getFileIcon = (mimetype?: string): string => {
         <div class="flex-1">
           <p class="mb-1 font-medium">{{ item.originalName }}</p>
           <p class="text-primary-500 dark:text-primary-400 text-sm">
-            {{ formatFileSize(item.size) }} - {{ formatDate(item.uploadDate) }}
+            {{ formatFileSize(item.size) }} - {{ formatDate(item.updatedAt) }}
           </p>
           <p
             v-if="item.description"
