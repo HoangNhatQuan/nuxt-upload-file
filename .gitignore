@@ -192,4 +192,6 @@ Thumbs.db
 
 /client/node_modules
 /client/.nuxt
+/client/.output
+
 /server/node_modules

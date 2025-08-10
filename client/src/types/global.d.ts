@@ -11,8 +11,8 @@ declare global {
   const defineEmits: (typeof import('vue'))['defineEmits'];
   const defineProps: (typeof import('vue'))['defineProps'];
   const withDefaults: (typeof import('vue'))['withDefaults'];
-  const useToast: () => any;
-  const useUploadFile: () => any;
+  const useToast: () => unknown;
+  const useUploadFile: () => unknown;
   const storeToRefs: (typeof import('pinia'))['storeToRefs'];
   const useColorMode: () => {
     value: 'light' | 'dark' | 'system';

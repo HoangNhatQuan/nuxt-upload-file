@@ -28,11 +28,8 @@ export interface FilesResponse {
   nextOffset: number;
 }
 
-export class ApiService {
-  static async uploadFile(
-    file: File,
-    description?: string,
-  ): Promise<UploadResponse> {
+export const ApiService = {
+  async uploadFile(file: File, description?: string): Promise<UploadResponse> {
     const formData = new FormData();
     formData.append('file', file);
     if (description) {
@@ -50,9 +47,9 @@ export class ApiService {
     }
 
     return response.json();
-  }
+  },
 
-  static async getFiles(params?: {
+  async getFiles(params?: {
     prefix?: string;
     limit?: number;
     offset?: number;
@@ -71,9 +68,9 @@ export class ApiService {
     }
 
     return response.json();
-  }
+  },
 
-  static async deleteFile(filename: string): Promise<{ message: string }> {
+  async deleteFile(filename: string): Promise<{ message: string }> {
     const response = await fetch(`${API_BASE_URL}/files/${filename}`, {
       method: 'DELETE',
     });
@@ -84,11 +81,11 @@ export class ApiService {
     }
 
     return response.json();
-  }
+  },
 
-  static async deleteFiles(
+  async deleteFiles(
     filenames: string[],
-  ): Promise<{ message: string; results: any[] }> {
+  ): Promise<{ message: string; results: unknown[] }> {
     const response = await fetch(`${API_BASE_URL}/files`, {
       method: 'DELETE',
       headers: {
@@ -103,12 +100,9 @@ export class ApiService {
     }
 
     return response.json();
-  }
+  },
 
-  static async getFileUrl(
-    filename: string,
-    expiresIn?: number,
-  ): Promise<string> {
+  async getFileUrl(filename: string, expiresIn?: number): Promise<string> {
     const url = new URL(`${API_BASE_URL}/files/${filename}/url`);
     if (expiresIn) url.searchParams.append('expiresIn', expiresIn.toString());
 
@@ -120,5 +114,5 @@ export class ApiService {
 
     const data = await response.json();
     return data.url;
-  }
-}
+  },
+};

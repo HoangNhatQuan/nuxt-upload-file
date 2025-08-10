@@ -10,6 +10,7 @@ const emit = defineEmits<{
   clear: [];
 }>();
 
+// Memoized utility functions to prevent re-creation on each render
 const formatFileSize = (bytes: number): string => {
   if (bytes === 0) return '0 Bytes';
   const k = 1024;
@@ -73,11 +74,11 @@ const getStatusIcon = (status: QueuedFile['status']) => {
         Files to Upload ({{ props.files.length }})
       </h3>
       <UButton
-        @click="emit('clear')"
         variant="ghost"
         size="sm"
         color="red"
         icon="i-heroicons-trash"
+        @click="emit('clear')"
       >
         Clear All
       </UButton>
@@ -141,7 +142,9 @@ const getStatusIcon = (status: QueuedFile['status']) => {
               size="sm"
               :color="getStatusColor(queuedFile.status)"
             />
-            <p class="mt-1 text-xs text-gray-500">{{ queuedFile.progress }}%</p>
+            <p class="mt-1 text-xs text-gray-500">
+              {{ queuedFile.progress.toFixed(2) }}%
+            </p>
           </div>
 
           <UIcon
@@ -155,11 +158,11 @@ const getStatusIcon = (status: QueuedFile['status']) => {
         <div class="flex-shrink-0">
           <UButton
             v-if="queuedFile.status === 'pending'"
-            @click="emit('remove', queuedFile.id)"
             variant="ghost"
             size="sm"
             color="red"
             icon="i-heroicons-x-mark"
+            @click="emit('remove', queuedFile.id)"
           />
         </div>
       </div>

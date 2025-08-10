@@ -1,29 +1,23 @@
 <script setup lang="ts">
-import { computed, storeToRefs } from '../../composables/useVueHelpers';
+import { storeToRefs } from 'pinia';
+import { computed } from 'vue';
+
 import { useUploadFile } from '../../stores/use-upload-file';
 
 const uploadFileStore = useUploadFile();
 
-const { uploadedFiles, queuedFiles, isUploading, isLoading, error } =
-  storeToRefs(uploadFileStore);
+const {
+  uploadedFiles,
+  queuedFiles,
+  isUploading,
+  isLoading,
+  error,
+  pendingFilesCount,
+  hasQueuedFiles,
+} = storeToRefs(uploadFileStore);
 
 const handleAddFiles = async (files: File[]) => {
-  const filesWithPreviews = await Promise.all(
-    files.map(async (file) => {
-      const preview = await uploadFileStore.generatePreview(file);
-      return { file, preview };
-    }),
-  );
-
-  const queuedFiles = filesWithPreviews.map(({ file, preview }) => ({
-    id: `${Date.now()}-${Math.random()}`,
-    file,
-    preview,
-    status: 'pending' as const,
-    progress: 0,
-  }));
-
-  uploadFileStore.addToQueue(files);
+  await uploadFileStore.addToQueue(files);
 };
 
 const handleRemoveFromQueue = (id: string) => {
@@ -40,11 +34,15 @@ const handleUpload = () => {
 
 const canUpload = computed(() => {
   return (
-    queuedFiles.value.length > 0 &&
-    queuedFiles.value.some((qf: any) => qf.status === 'pending') &&
-    !isUploading.value
+    hasQueuedFiles.value && pendingFilesCount.value > 0 && !isUploading.value
   );
 });
+
+const uploadButtonText = computed(() =>
+  isUploading.value
+    ? 'Uploading...'
+    : `Upload ${pendingFilesCount.value} Files`,
+);
 </script>
 
 <template>
@@ -73,22 +71,18 @@ const canUpload = computed(() => {
 
     <!-- Upload Button -->
     <div
-      v-if="queuedFiles.length > 0"
+      v-if="hasQueuedFiles"
       class="flex justify-center"
     >
       <UButton
-        @click="handleUpload"
         :disabled="!canUpload"
         :loading="isUploading"
         size="lg"
         color="blue"
         icon="i-heroicons-arrow-up-tray"
+        @click="handleUpload"
       >
-        {{
-          isUploading
-            ? 'Uploading...'
-            : `Upload ${queuedFiles.filter((f: any) => f.status === 'pending').length} Files`
-        }}
+        {{ uploadButtonText }}
       </UButton>
     </div>
 
@@ -100,11 +94,11 @@ const canUpload = computed(() => {
       <div class="flex items-center justify-between">
         <h2 class="text-xl font-semibold">Uploaded Files</h2>
         <UButton
-          @click="uploadFileStore.loadFiles"
           :loading="isLoading"
           variant="ghost"
           size="sm"
           icon="i-heroicons-arrow-path"
+          @click="uploadFileStore.loadFiles"
         >
           Refresh
         </UButton>

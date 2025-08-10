@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 
 import type { UploadedFile } from '../apis/api';
 import { ApiService } from '../apis/api';
@@ -35,32 +35,38 @@ export const useUploadFile = defineStore('upload-file', () => {
   };
 
   // Add files to queue
-  const addToQueue = (files: File[]) => {
-    const newQueuedFiles: QueuedFile[] = files.map((file) => ({
-      id: `${Date.now()}-${Math.random()}`,
-      file,
-      status: 'pending',
-      progress: 0,
-    }));
+  const addToQueue = async (files: File[]) => {
+    const newQueuedFiles: QueuedFile[] = [];
 
-    // Check for duplicates and handle naming conflicts
-    newQueuedFiles.forEach((queuedFile) => {
+    for (const file of files) {
+      // Generate preview for image files
+      const preview = await generatePreview(file);
+
+      const queuedFile: QueuedFile = {
+        id: `${Date.now()}-${Math.random()}`,
+        file,
+        preview,
+        status: 'pending',
+        progress: 0,
+      };
+
+      // Check for duplicates and handle naming conflicts
       const existingFile = uploadedFiles.value.find(
-        (uploaded) => uploaded.originalName === queuedFile.file.name,
+        (uploaded) => uploaded.originalName === file.name,
       );
 
       if (existingFile) {
         // Generate unique name with suffix
-        const nameParts = queuedFile.file.name.split('.');
+        const nameParts = file.name.split('.');
         const ext = nameParts.pop();
         const baseName = nameParts.join('.');
-        queuedFile.file = new File(
-          [queuedFile.file],
-          `${baseName}_${Date.now()}.${ext}`,
-          { type: queuedFile.file.type },
-        );
+        queuedFile.file = new File([file], `${baseName}_${Date.now()}.${ext}`, {
+          type: file.type,
+        });
       }
-    });
+
+      newQueuedFiles.push(queuedFile);
+    }
 
     queuedFiles.value = [...queuedFiles.value, ...newQueuedFiles];
   };
@@ -82,6 +88,14 @@ export const useUploadFile = defineStore('upload-file', () => {
     isUploading.value = true;
     error.value = null;
 
+    // Clear the file input when upload starts
+    const fileInput = document.getElementById(
+      'dropzone-file',
+    ) as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = '';
+    }
+
     try {
       let hasSuccessfulUploads = false;
 
@@ -91,14 +105,19 @@ export const useUploadFile = defineStore('upload-file', () => {
           queuedFile.progress = 0;
 
           try {
-            // Simulate progress
+            const _response = await ApiService.uploadFile(queuedFile.file);
+
+            // Simulate progress during upload
             const progressInterval = setInterval(() => {
               if (queuedFile.progress < 90) {
-                queuedFile.progress += Math.random() * 10;
+                queuedFile.progress =
+                  Math.round((queuedFile.progress + Math.random() * 10) * 100) /
+                  100;
               }
             }, 100);
 
-            const response = await ApiService.uploadFile(queuedFile.file);
+            // Wait a bit for progress simulation
+            await new Promise((resolve) => setTimeout(resolve, 500));
 
             clearInterval(progressInterval);
             queuedFile.progress = 100;
@@ -164,12 +183,21 @@ export const useUploadFile = defineStore('upload-file', () => {
     loadFiles();
   });
 
+  // Computed properties for better performance
+  const pendingFilesCount = computed(
+    () => queuedFiles.value.filter((qf) => qf.status === 'pending').length,
+  );
+
+  const hasQueuedFiles = computed(() => queuedFiles.value.length > 0);
+
   return {
     uploadedFiles,
     queuedFiles,
     isUploading,
     isLoading,
     error,
+    pendingFilesCount,
+    hasQueuedFiles,
     loadFiles,
     addToQueue,
     removeFromQueue,

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, useToast } from '../../composables/useVueHelpers';
+import { ref } from 'vue';
 
 const props = withDefaults(
   defineProps<{
@@ -12,7 +12,7 @@ const props = withDefaults(
 
 const emit = defineEmits(['add-files']);
 
-const toast = useToast();
+
 const inputFile = ref<HTMLInputElement | null>(null);
 const dropZone = ref<HTMLLabelElement | null>(null);
 const isDragOver = ref(false);
@@ -21,32 +21,29 @@ const validateFile = (file: File): boolean => {
   // Check file size (50MB limit as per server)
   const maxSize = 50 * 1024 * 1024; // 50MB
   if (file.size > maxSize) {
-    toast.add({
-      id: 'error_upload_file',
-      title: 'Error',
-      description: 'File too large. Maximum size is 50MB.',
-      icon: 'i-heroicons-exclamation-triangle',
-    });
+    console.error('File too large. Maximum size is 50MB.');
     return false;
   }
   return true;
 };
 
-const handleFiles = (files: FileList | File[]) => {
+const handleFiles = async (files: FileList | File[]) => {
   const validFiles = Array.from(files).filter(validateFile);
 
   if (validFiles.length > 0) {
-    emit('add-files', validFiles);
+    await emit('add-files', validFiles);
   }
 };
 
-const handleChange = (e: Event) => {
+const handleChange = async (e: Event) => {
   const target = e.target as HTMLInputElement;
 
   if (!target.files?.length) return;
 
-  handleFiles(target.files);
-  inputFile.value!.value = '';
+  await handleFiles(target.files);
+
+  // Don't reset immediately - let the user see their selection
+  // The input will be reset when they start uploading
 };
 
 const handleDragOver = (e: DragEvent) => {
@@ -59,19 +56,13 @@ const handleDragLeave = (e: DragEvent) => {
   isDragOver.value = false;
 };
 
-const handleDrop = (e: DragEvent) => {
+const handleDrop = async (e: DragEvent) => {
   e.preventDefault();
   isDragOver.value = false;
 
   if (!e.dataTransfer?.files?.length) return;
 
-  handleFiles(e.dataTransfer.files);
-};
-
-const handleClick = () => {
-  if (!props.disabled) {
-    inputFile.value?.click();
-  }
+  await handleFiles(e.dataTransfer.files);
 };
 </script>
 
@@ -89,7 +80,6 @@ const handleClick = () => {
     @dragover="handleDragOver"
     @dragleave="handleDragLeave"
     @drop="handleDrop"
-    @click="handleClick"
   >
     <input
       id="dropzone-file"

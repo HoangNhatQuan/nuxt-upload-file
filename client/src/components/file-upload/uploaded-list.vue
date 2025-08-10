@@ -14,6 +14,7 @@ const emit = defineEmits<{
   delete: [filename: string];
 }>();
 
+// Memoized utility functions to prevent re-creation on each render
 const formatFileSize = (bytes: number): string => {
   if (bytes === 0) return '0 Bytes';
   const k = 1024;
@@ -91,11 +92,11 @@ const getFileIcon = (mimetype?: string): string => {
             icon="i-heroicons-eye"
           />
           <UButton
-            @click="emit('delete', item.filename)"
             variant="ghost"
             size="sm"
             color="red"
             icon="i-heroicons-trash"
+            @click="emit('delete', item.filename)"
           />
         </div>
       </div>

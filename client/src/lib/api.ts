@@ -19,11 +19,8 @@ export interface FilesResponse {
   files: UploadedFile[];
 }
 
-export class ApiService {
-  static async uploadFile(
-    file: File,
-    description?: string,
-  ): Promise<UploadResponse> {
+export const ApiService = {
+  async uploadFile(file: File, description?: string): Promise<UploadResponse> {
     const formData = new FormData();
     formData.append('file', file);
     if (description) {
@@ -41,9 +38,9 @@ export class ApiService {
     }
 
     return response.json();
-  }
+  },
 
-  static async getFiles(): Promise<FilesResponse> {
+  async getFiles(): Promise<FilesResponse> {
     const response = await fetch(`${API_BASE_URL}/files`);
 
     if (!response.ok) {
@@ -51,9 +48,9 @@ export class ApiService {
     }
 
     return response.json();
-  }
+  },
 
-  static async deleteFile(filename: string): Promise<{ message: string }> {
+  async deleteFile(filename: string): Promise<{ message: string }> {
     const response = await fetch(`${API_BASE_URL}/files/${filename}`, {
       method: 'DELETE',
     });
@@ -64,9 +61,9 @@ export class ApiService {
     }
 
     return response.json();
-  }
+  },
 
-  static getFileUrl(filename: string): string {
+  getFileUrl(filename: string): string {
     return `${API_BASE_URL}/files/${filename}`;
-  }
-} 
+  },
+};
