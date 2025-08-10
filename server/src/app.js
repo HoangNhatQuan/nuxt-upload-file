@@ -16,7 +16,7 @@ app.use(
   cors({
     origin:
       process.env.NODE_ENV === "production"
-        ? ["https://yourdomain.com"]
+        ? ["https://project-uploader-phi.vercel.app"]
         : [/^http:\/\/localhost:\d+$/, /^http:\/\/172\.16\.0\.\d+:\d+$/],
     credentials: true,
   })
