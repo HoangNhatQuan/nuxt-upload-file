@@ -44,7 +44,7 @@ A modern file upload application built with Nuxt 3, featuring a comprehensive up
 ### Prerequisites
 
 - Node.js 18+
-- pnpm (recommended) or npm
+- yarn (recommended) or npm
 
 ### Environment Setup
 
@@ -64,13 +64,13 @@ A modern file upload application built with Nuxt 3, featuring a comprehensive up
 1. **Install dependencies**:
 
    ```bash
-   pnpm install
+   yarn install
    ```
 
 2. **Start the development server**:
 
    ```bash
-   pnpm run dev
+   yarn run dev
    ```
 
 3. **Start the backend server** (in a separate terminal):
@@ -149,11 +149,11 @@ src/
 
 ### Available Scripts
 
-- `pnpm run dev` - Start development server
-- `pnpm run build` - Build for production
-- `pnpm run preview` - Preview production build
-- `pnpm run lint` - Run ESLint
-- `pnpm run lint:fix` - Fix ESLint errors
+- `yarn run dev` - Start development server
+- `yarn run build` - Build for production
+- `yarn run preview` - Preview production build
+- `yarn run lint` - Run ESLint
+- `yarn run lint:fix` - Fix ESLint errors
 
 ## Browser Support
 
