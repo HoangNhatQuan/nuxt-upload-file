@@ -158,9 +158,7 @@ const uploadSingleFile = async (req, res) => {
       .digest("hex");
 
     // Sanitize filename
-    const sanitizedFilename = path
-      .basename(req.file.originalname)
-      .replace(/[^a-zA-Z0-9.-]/g, "_");
+    const sanitizedFilename = path.basename(req.file.originalname);
 
     // Upload to Supabase storage
     const result = await uploadFile({
