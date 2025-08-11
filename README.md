@@ -4,7 +4,7 @@ A complete web application for secure file uploads built with modern technologie
 
 ## 🚀 Features
 
-### Frontend (Nuxt.js 2.0 + Vuetify.js)
+### Frontend (Nuxt.js)
 
 - ✅ Modern, responsive Material Design UI
 - ✅ Drag and drop file upload
@@ -41,7 +41,7 @@ A complete web application for secure file uploads built with modern technologie
 
 ### Frontend
 
-- **Nuxt.js 2.0** - Vue.js framework for server-side rendering
+- **Nuxt.js** - Vue.js framework for server-side rendering
 - **Vuetify.js** - Material Design component library
 - **Axios** - HTTP client for API communication
 - **SCSS** - CSS preprocessor for styling
@@ -92,10 +92,10 @@ The backend will be running on `http://localhost:3001`
 cd client
 
 # Install dependencies
-npm install
+yarn install
 
 # Start the development server
-npm run dev
+yarn run dev
 ```
 
 The frontend will be running on `http://localhost:3000`
@@ -107,23 +107,39 @@ Open your browser and navigate to `http://localhost:3000`
 ## 📁 Project Structure
 
 ```
-assignment-kinobi/
-├── server/                 # Backend (Express.js)
-│   ├── server.js          # Main server file
-│   ├── package.json       # Backend dependencies
-│   ├── README.md          # Backend documentation
-│   └── uploads/           # Uploaded files directory
-├── client/                # Frontend (Nuxt.js)
-│   ├── pages/
-│   │   └── index.vue      # Main application page
-│   ├── plugins/
-│   │   └── toast.js       # Toast notification plugin
-│   ├── assets/
-│   │   └── variables.scss # Vuetify custom variables
-│   ├── nuxt.config.js     # Nuxt.js configuration
-│   ├── package.json       # Frontend dependencies
-│   └── README.md          # Frontend documentation
-└── README.md              # This file
+assignment-kinobi/                
+/server/src/           # Backend (Express.js)
+├── config/           # Configuration files
+│   ├── database.js   # Database connection and settings
+│   └── upload.js     # Upload configuration and file type definitions
+├── controllers/      # Request handlers and business logic
+│   └── fileController.js
+├── middlewares/      # Reusable middleware functions
+│   ├── errorHandler.js
+│   ├── upload.js     # Multer configuration
+│   └── validation.js # Request validation
+├── models/           # Data models and database operations
+│   └── file.js
+├── routes/           # Route definitions
+│   ├── api/
+│   │   └── files.js  # File-related routes
+│   └── index.js      # Main routes index
+├── utils/            # Utility functions
+│   └── security.js   # Security utilities
+├── app.js            # Express app configuration
+└── server.js         # Server entry point
+
+/client/src/                    # Frontend (Nuxt.js)
+├── components/file-upload/
+│   ├── basic.vue          # Basic upload interface
+│   ├── dialog.vue         # Modal upload interface
+│   ├── file-queue.vue     # File staging area
+│   ├── uploaded-list.vue  # File management list
+│   └── uploader.vue       # Drag & drop uploader
+├── stores/
+│   └── use-upload-file.ts # Upload state management
+└── pages/
+    └── index.vue         # Main application page
 ```
 
 ## 🔧 Configuration
@@ -162,8 +178,8 @@ The frontend is configured to connect to the backend at `http://localhost:3001`.
 ### File Upload Limits
 
 - **File Size**: Maximum 5MB
-- **File Types**: JPEG, JPG, PNG, GIF, WebP
-- **Files per Request**: 1 file
+- **File Types**: JPEG, JPG, PNG, GIF, WebP, Audio, doc/pdf, video/*
+- **Files per Request**: 1 file or multi files
 - **Rate Limit**: 10 uploads per 15 minutes per IP
 
 ## 🚀 Production Deployment

@@ -47,7 +47,7 @@ cd client
 
 if [ ! -d "node_modules" ]; then
     echo "Installing frontend dependencies..."
-    npm install
+    yarn install
     if [ $? -ne 0 ]; then
         echo "❌ Failed to install frontend dependencies"
         exit 1
@@ -67,7 +67,7 @@ echo "1. Start the backend server:"
 echo "   cd server && npm run dev"
 echo ""
 echo "2. In a new terminal, start the frontend:"
-echo "   cd client && npm run dev"
+echo "   cd client && yarn run dev"
 echo ""
 echo "3. Open your browser and navigate to:"
 echo "   http://localhost:3000"
