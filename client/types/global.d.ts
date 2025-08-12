@@ -10,27 +10,30 @@ declare module "vuetify/es5/util/colors" {
   export default colors;
 }
 
+interface ToastOptions {
+  timeout?: number;
+  color?: string;
+  icon?: string;
+}
+
+// Toast service interface
+interface IToastService {
+  success(message: string, options?: ToastOptions): void;
+  error(message: string, options?: ToastOptions): void;
+  warning(message: string, options?: ToastOptions): void;
+  info(message: string, options?: ToastOptions): void;
+}
+
 // Extend Vue interface for plugins
 declare module "vue/types/vue" {
   interface Vue {
-    $toast: {
-      success(message: string): void;
-      error(message: string): void;
-      info(message: string): void;
-      warning(message: string): void;
-    };
+    $toast: IToastService;
   }
 }
 
-// Extend Nuxt context
 declare module "@nuxt/types" {
   interface Context {
-    $toast: {
-      success(message: string): void;
-      error(message: string): void;
-      info(message: string): void;
-      warning(message: string): void;
-    };
+    $toast: IToastService;
   }
 }
 

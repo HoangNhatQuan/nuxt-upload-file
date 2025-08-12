@@ -32,7 +32,7 @@ export class ApiService implements IApiService {
   };
 
   private getBaseUrl(): string {
-    return process.env.API_BASE_URL || "http://localhost:3001/api";
+    return process.env.NUXT_API_BASE_URL || "http://localhost:3001/api";
   }
 
   private buildUrl(endpoint: string): string {

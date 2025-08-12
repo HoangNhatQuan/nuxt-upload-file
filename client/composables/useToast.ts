@@ -12,18 +12,36 @@ export interface IToastService {
 }
 
 export function useToast(): IToastService {
-  if (typeof window !== "undefined" && (window as any).$nuxt) {
-    const $toast = (window as any).$nuxt.$toast as IToastService;
-    if ($toast) {
-      return $toast;
+  if (typeof window !== "undefined") {
+    if ((window as any).$nuxt && (window as any).$nuxt.$toast) {
+      return (window as any).$nuxt.$toast as IToastService;
+    }
+    
+    if ((window as any).Vue && (window as any).Vue.prototype.$toast) {
+      return (window as any).Vue.prototype.$toast as IToastService;
     }
   }
 
-  // Fallback implementation if toast service is not available
   return {
-    success: (message: string) => console.log("SUCCESS:", message),
-    error: (message: string) => console.error("ERROR:", message),
-    warning: (message: string) => console.warn("WARNING:", message),
-    info: (message: string) => console.info("INFO:", message),
+    success: (message: string, options?: ToastOptions) => {
+      if (typeof window !== "undefined" && "Notification" in window && Notification.permission === "granted") {
+        new Notification("Success", { body: message });
+      }
+    },
+    error: (message: string, options?: ToastOptions) => {
+      if (typeof window !== "undefined" && "Notification" in window && Notification.permission === "granted") {
+        new Notification("Error", { body: message });
+      }
+    },
+    warning: (message: string, options?: ToastOptions) => {
+      if (typeof window !== "undefined" && "Notification" in window && Notification.permission === "granted") {
+        new Notification("Warning", { body: message });
+      }
+    },
+    info: (message: string, options?: ToastOptions) => {
+      if (typeof window !== "undefined" && "Notification" in window && Notification.permission === "granted") {
+        new Notification("Info", { body: message });
+      }
+    },
   };
 }

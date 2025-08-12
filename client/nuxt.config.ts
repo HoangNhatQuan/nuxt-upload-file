@@ -43,7 +43,7 @@ const config = {
    ** Axios module configuration
    */
   axios: {
-    baseURL: process.env.API_BASE_URL || "http://localhost:3001/api",
+    baseURL: process.env.NUXT_API_BASE_URL || "http://localhost:3001/api",
   },
   /*
    ** vuetify module configuration

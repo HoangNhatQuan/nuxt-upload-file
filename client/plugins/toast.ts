@@ -3,17 +3,18 @@ import { ToastOptions } from "~/composables/useToast";
 
 class ToastService {
   $store: any;
+  
+  constructor(store: any) {
+    this.$store = store;
+  }
+
   private createSnackbar(message: string, options: ToastOptions = {}) {
-    // Use Vuex store to show snackbar
     if (this.$store) {
       this.$store.commit("SET_SNACKBAR", {
         show: true,
         text: message,
         color: options.color || "primary",
       });
-    } else {
-      // Fallback to console log
-      console.log("Snackbar:", { message, ...options });
     }
   }
 
@@ -39,6 +40,7 @@ class ToastService {
   }
 
   info(message: string, options?: ToastOptions) {
+    console.log("Toast info called:", message);
     this.createSnackbar(message, {
       ...options,
       color: "info",
@@ -47,10 +49,12 @@ class ToastService {
 }
 
 export default ({ app, store }: { app: any; store: any }) => {
-  const toastService = new ToastService();
-
-  // Bind store to toast service
-  toastService.$store = store;
-
+  const toastService = new ToastService(store);
+  Vue.prototype.$toast = toastService;
+  
   app.$toast = toastService;
+  
+  if (app.context) {
+    app.context.$toast = toastService;
+  }
 };
