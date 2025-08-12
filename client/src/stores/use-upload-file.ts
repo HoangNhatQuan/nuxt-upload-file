@@ -1,210 +1,240 @@
 import { defineStore } from 'pinia';
-import { onMounted, ref, computed } from 'vue';
+import { onMounted } from 'vue';
 
-import type { UploadedFile } from '../composables/useApi';
 import { useApi } from '../composables/useApi';
+import { useFileUtils } from '../composables/useFileUtils';
+import type { UploadedFile, QueuedFile, UploadResult } from '../types/file';
+import { FileStatus } from '../types/file';
 
-export interface QueuedFile {
-  id: string;
-  file: File;
-  preview?: string;
-  status: 'pending' | 'uploading' | 'success' | 'error';
-  progress: number;
-  error?: string;
-}
+// Constants
+const PROGRESS_UPDATE_INTERVAL = 100;
+const PROGRESS_SIMULATION_DELAY = 500;
+const SUCCESS_REMOVAL_DELAY = 2000;
+const PROGRESS_INCREMENT = 10;
+const MAX_PROGRESS_BEFORE_COMPLETE = 90;
 
-export const useUploadFile = defineStore('upload-file', () => {
-  const { getFiles, uploadFile, deleteFile: apiDeleteFile } = useApi();
-  const uploadedFiles = ref<UploadedFile[]>([]);
-  const queuedFiles = ref<QueuedFile[]>([]);
-  const isUploading = ref(false);
-  const error = ref<string | null>(null);
-  const isLoading = ref(false);
+// Utility functions
+const generateUniqueId = (): string => `${Date.now()}-${Math.random()}`;
 
-  // Load existing files
-  const loadFiles = async () => {
-    isLoading.value = true;
-    try {
-      const response = await getFiles();
-      uploadedFiles.value = response.files;
-    } catch (err) {
-      console.error('Failed to load files:', err);
-      error.value = 'Failed to load files';
-    } finally {
-      isLoading.value = false;
-    }
-  };
+const simulateProgress = (queuedFile: QueuedFile): Promise<void> => {
+  return new Promise((resolve) => {
+    const progressInterval = setInterval(() => {
+      if (queuedFile.progress < MAX_PROGRESS_BEFORE_COMPLETE) {
+        queuedFile.progress =
+          Math.round(
+            (queuedFile.progress + Math.random() * PROGRESS_INCREMENT) * 100,
+          ) / 100;
+      }
+    }, PROGRESS_UPDATE_INTERVAL);
 
-  // Add files to queue
-  const addToQueue = async (files: File[]) => {
-    const newQueuedFiles: QueuedFile[] = [];
+    setTimeout(() => {
+      clearInterval(progressInterval);
+      queuedFile.progress = 100;
+      resolve();
+    }, PROGRESS_SIMULATION_DELAY);
+  });
+};
 
-    for (const file of files) {
-      // Generate preview for image files
+export const useUploadFile = defineStore('upload-file', {
+  // State
+  state: () => ({
+    uploadedFiles: [] as UploadedFile[],
+    queuedFiles: [] as QueuedFile[],
+    isUploading: false,
+    error: null as string | null,
+    isLoading: false,
+  }),
+
+  // Getters
+  getters: {
+    pendingFilesCount: (state) =>
+      state.queuedFiles.filter((qf) => qf.status === FileStatus.PENDING).length,
+
+    hasQueuedFiles: (state) => state.queuedFiles.length > 0,
+
+    uploadingFilesCount: (state) =>
+      state.queuedFiles.filter((qf) => qf.status === FileStatus.UPLOADING)
+        .length,
+
+    successfulFilesCount: (state) =>
+      state.queuedFiles.filter((qf) => qf.status === FileStatus.SUCCESS).length,
+
+    errorFilesCount: (state) =>
+      state.queuedFiles.filter((qf) => qf.status === FileStatus.ERROR).length,
+
+    pendingFiles: (state) =>
+      state.queuedFiles.filter((qf) => qf.status === FileStatus.PENDING),
+
+    uploadingFiles: (state) =>
+      state.queuedFiles.filter((qf) => qf.status === FileStatus.UPLOADING),
+
+    successfulFiles: (state) =>
+      state.queuedFiles.filter((qf) => qf.status === FileStatus.SUCCESS),
+
+    errorFiles: (state) =>
+      state.queuedFiles.filter((qf) => qf.status === FileStatus.ERROR),
+  },
+
+  // Actions
+  actions: {
+    // Error handling
+    setError(message: string) {
+      this.error = message;
+    },
+
+    clearError() {
+      this.error = null;
+    },
+
+    handleApiError(err: unknown, defaultMessage: string): string {
+      const errorMessage = err instanceof Error ? err.message : defaultMessage;
+      console.error(`${defaultMessage}:`, err);
+      return errorMessage;
+    },
+
+    // File operations
+    async loadFiles(): Promise<void> {
+      const { getFiles } = useApi();
+
+      this.isLoading = true;
+      this.clearError();
+
+      try {
+        const response = await getFiles();
+        this.uploadedFiles = response.files;
+      } catch (err) {
+        const errorMessage = this.handleApiError(err, 'Failed to load files');
+        this.setError(errorMessage);
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
+    async createQueuedFile(file: File): Promise<QueuedFile> {
+      const { generatePreview, generateUniqueFileName } = useFileUtils();
+
       const preview = await generatePreview(file);
 
       const queuedFile: QueuedFile = {
-        id: `${Date.now()}-${Math.random()}`,
+        id: generateUniqueId(),
         file,
         preview,
-        status: 'pending',
+        status: FileStatus.PENDING,
         progress: 0,
       };
 
-      // Check for duplicates and handle naming conflicts
-      const existingFile = uploadedFiles.value.find(
+      // Handle duplicate file names
+      const existingFile = this.uploadedFiles.find(
         (uploaded) => uploaded.originalName === file.name,
       );
 
       if (existingFile) {
-        // Generate unique name with suffix
-        const nameParts = file.name.split('.');
-        const ext = nameParts.pop();
-        const baseName = nameParts.join('.');
-        queuedFile.file = new File([file], `${baseName}_${Date.now()}.${ext}`, {
+        const uniqueFileName = generateUniqueFileName(file.name);
+        queuedFile.file = new File([file], uniqueFileName, {
           type: file.type,
         });
       }
 
-      newQueuedFiles.push(queuedFile);
-    }
+      return queuedFile;
+    },
 
-    queuedFiles.value = [...queuedFiles.value, ...newQueuedFiles];
-  };
-
-  // Remove file from queue
-  const removeFromQueue = (id: string) => {
-    queuedFiles.value = queuedFiles.value.filter((qf) => qf.id !== id);
-  };
-
-  // Clear all queued files
-  const clearQueue = () => {
-    queuedFiles.value = [];
-  };
-
-  // Upload queued files
-  const uploadQueuedFiles = async () => {
-    if (queuedFiles.value.length === 0) return;
-
-    isUploading.value = true;
-    error.value = null;
-
-    // Clear the file input when upload starts
-    const fileInput = document.getElementById(
-      'dropzone-file',
-    ) as HTMLInputElement;
-    if (fileInput) {
-      fileInput.value = '';
-    }
-
-    try {
-      let hasSuccessfulUploads = false;
-
-      for (const queuedFile of queuedFiles.value) {
-        if (queuedFile.status === 'pending') {
-          queuedFile.status = 'uploading';
-          queuedFile.progress = 0;
-
-          try {
-            const _response = await uploadFile(queuedFile.file);
-
-            // Simulate progress during upload
-            const progressInterval = setInterval(() => {
-              if (queuedFile.progress < 90) {
-                queuedFile.progress =
-                  Math.round((queuedFile.progress + Math.random() * 10) * 100) /
-                  100;
-              }
-            }, 100);
-
-            // Wait a bit for progress simulation
-            await new Promise((resolve) => setTimeout(resolve, 500));
-
-            clearInterval(progressInterval);
-            queuedFile.progress = 100;
-            queuedFile.status = 'success';
-            hasSuccessfulUploads = true;
-          } catch (err) {
-            queuedFile.status = 'error';
-            queuedFile.error =
-              err instanceof Error ? err.message : 'Upload failed';
-          }
-        }
-      }
-
-      // Refresh the file list only if there were successful uploads
-      if (hasSuccessfulUploads) {
-        await loadFiles();
-      }
-
-      // Remove successful uploads from queue after a delay
-      setTimeout(() => {
-        queuedFiles.value = queuedFiles.value.filter(
-          (qf) => qf.status !== 'success',
-        );
-      }, 2000);
-    } catch (err) {
-      console.error('Upload error:', err);
-      error.value = err instanceof Error ? err.message : 'Upload failed';
-    } finally {
-      isUploading.value = false;
-    }
-  };
-
-  // Delete uploaded file
-  const deleteFile = async (filename: string) => {
-    try {
-      await apiDeleteFile(filename);
-      uploadedFiles.value = uploadedFiles.value.filter(
-        (file) => file.filename !== filename,
+    async addToQueue(files: File[]): Promise<void> {
+      const newQueuedFiles = await Promise.all(
+        files.map((file) => this.createQueuedFile(file)),
       );
-    } catch (err) {
-      console.error('Delete error:', err);
-      error.value = err instanceof Error ? err.message : 'Delete failed';
-    }
-  };
 
-  // Generate preview for images
-  const generatePreview = (file: File): Promise<string> => {
-    return new Promise((resolve) => {
-      if (file.type.startsWith('image/')) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          resolve(e.target?.result as string);
-        };
-        reader.readAsDataURL(file);
-      } else {
-        resolve('');
+      this.queuedFiles = [...this.queuedFiles, ...newQueuedFiles];
+    },
+
+    removeFromQueue(id: string): void {
+      this.queuedFiles = this.queuedFiles.filter((qf) => qf.id !== id);
+    },
+
+    clearQueue(): void {
+      this.queuedFiles = [];
+    },
+
+    async uploadSingleFile(queuedFile: QueuedFile): Promise<UploadResult> {
+      const { uploadFile } = useApi();
+
+      if (queuedFile.status !== FileStatus.PENDING) {
+        return { success: false, error: 'File is not in pending status' };
       }
-    });
-  };
 
-  // Initialize store
-  onMounted(() => {
-    loadFiles();
-  });
+      queuedFile.status = FileStatus.UPLOADING;
+      queuedFile.progress = 0;
 
-  // Computed properties for better performance
-  const pendingFilesCount = computed(
-    () => queuedFiles.value.filter((qf) => qf.status === 'pending').length,
-  );
+      try {
+        await uploadFile(queuedFile.file);
+        await simulateProgress(queuedFile);
 
-  const hasQueuedFiles = computed(() => queuedFiles.value.length > 0);
+        queuedFile.status = FileStatus.SUCCESS;
+        return { success: true };
+      } catch (err) {
+        queuedFile.status = FileStatus.ERROR;
+        queuedFile.error = this.handleApiError(err, 'Upload failed');
+        return { success: false, error: queuedFile.error };
+      }
+    },
 
-  return {
-    uploadedFiles,
-    queuedFiles,
-    isUploading,
-    isLoading,
-    error,
-    pendingFilesCount,
-    hasQueuedFiles,
-    loadFiles,
-    addToQueue,
-    removeFromQueue,
-    clearQueue,
-    uploadQueuedFiles,
-    deleteFile,
-    generatePreview,
-  };
+    async uploadQueuedFiles(): Promise<void> {
+      if (this.queuedFiles.length === 0) return;
+
+      this.isUploading = true;
+      this.clearError();
+
+      try {
+        const pendingFiles = this.queuedFiles.filter(
+          (qf) => qf.status === FileStatus.PENDING,
+        );
+
+        const uploadResults = await Promise.all(
+          pendingFiles.map((file) => this.uploadSingleFile(file)),
+        );
+
+        const hasSuccessfulUploads = uploadResults.some(
+          (result) => result.success,
+        );
+
+        if (hasSuccessfulUploads) {
+          await this.loadFiles();
+        }
+
+        // Remove successful uploads after delay
+        setTimeout(() => {
+          this.queuedFiles = this.queuedFiles.filter(
+            (qf) => qf.status !== FileStatus.SUCCESS,
+          );
+        }, SUCCESS_REMOVAL_DELAY);
+      } catch (err) {
+        const errorMessage = this.handleApiError(err, 'Upload error');
+        this.setError(errorMessage);
+      } finally {
+        this.isUploading = false;
+      }
+    },
+
+    async deleteFile(filename: string): Promise<void> {
+      const { deleteFile: apiDeleteFile } = useApi();
+
+      this.clearError();
+
+      try {
+        await apiDeleteFile(filename);
+        this.uploadedFiles = this.uploadedFiles.filter(
+          (file) => file.filename !== filename,
+        );
+      } catch (err) {
+        const errorMessage = this.handleApiError(err, 'Delete failed');
+        this.setError(errorMessage);
+      }
+    },
+
+    // Initialize store
+    initialize() {
+      onMounted(() => {
+        this.loadFiles();
+      });
+    },
+  },
 });

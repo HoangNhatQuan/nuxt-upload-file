@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import type { UploadedFile } from '../../apis/api';
-
 const props = withDefaults(
   defineProps<{
     files: UploadedFile[];

@@ -23,19 +23,22 @@ export interface UploadResponse {
 export const useApi = () => {
   const config = useRuntimeConfig();
   const apiBaseUrl = config.public.apiBaseUrl;
-  
+
   const endpoints = {
     UPLOAD: '/upload',
     FILES: '/files',
     HEALTH: '/health',
     CONFIG: '/upload/config',
   } as const;
-  
+
   const buildUrl = (endpoint: string): string => {
     return `${apiBaseUrl}${endpoint}`;
   };
 
-  const uploadFile = async (file: File, description?: string): Promise<UploadResponse> => {
+  const uploadFile = async (
+    file: File,
+    description?: string,
+  ): Promise<UploadResponse> => {
     const formData = new FormData();
     formData.append('file', file);
     if (description) {
@@ -108,7 +111,10 @@ export const useApi = () => {
     return response.json();
   };
 
-  const getFileUrl = async (filename: string, expiresIn?: number): Promise<string> => {
+  const getFileUrl = async (
+    filename: string,
+    expiresIn?: number,
+  ): Promise<string> => {
     const url = new URL(buildUrl(`${endpoints.FILES}/${filename}/url`));
     if (expiresIn) url.searchParams.append('expiresIn', expiresIn.toString());
 
@@ -131,4 +137,4 @@ export const useApi = () => {
     apiBaseUrl,
     endpoints,
   };
-}; 
+};

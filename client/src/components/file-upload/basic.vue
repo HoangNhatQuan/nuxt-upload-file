@@ -1,48 +1,29 @@
 <script setup lang="ts">
-import { storeToRefs } from 'pinia';
-import { computed } from 'vue';
-
-import { useUploadFile } from '../../stores/use-upload-file';
-
-const uploadFileStore = useUploadFile();
+import { useFileUpload } from '../../composables/useFileUpload';
 
 const {
+  // State
   uploadedFiles,
   queuedFiles,
   isUploading,
   isLoading,
   error,
-  pendingFilesCount,
+
+  // Computed
+  canUpload,
+  uploadButtonText,
+  hasUploadedFiles,
   hasQueuedFiles,
-} = storeToRefs(uploadFileStore);
 
-const handleAddFiles = async (files: File[]) => {
-  await uploadFileStore.addToQueue(files);
-};
-
-const handleRemoveFromQueue = (id: string) => {
-  uploadFileStore.removeFromQueue(id);
-};
-
-const handleClearQueue = () => {
-  uploadFileStore.clearQueue();
-};
-
-const handleUpload = () => {
-  uploadFileStore.uploadQueuedFiles();
-};
-
-const canUpload = computed(() => {
-  return (
-    hasQueuedFiles.value && pendingFilesCount.value > 0 && !isUploading.value
-  );
-});
-
-const uploadButtonText = computed(() =>
-  isUploading.value
-    ? 'Uploading...'
-    : `Upload ${pendingFilesCount.value} Files`,
-);
+  // Actions
+  addFiles,
+  removeFromQueue,
+  clearQueue,
+  uploadFiles,
+  deleteFile,
+  refreshFiles,
+  clearError,
+} = useFileUpload();
 </script>
 
 <template>
@@ -54,19 +35,20 @@ const uploadButtonText = computed(() =>
       variant="soft"
       :title="error"
       class="mb-4"
+      @close="clearError"
     />
 
     <!-- File Uploader -->
     <FileUploadUploader
       :disabled="isUploading"
-      @add-files="handleAddFiles"
+      @add-files="addFiles"
     />
 
     <!-- File Queue -->
     <FileUploadFileQueue
       :files="queuedFiles"
-      @remove="handleRemoveFromQueue"
-      @clear="handleClearQueue"
+      @remove="removeFromQueue"
+      @clear="clearQueue"
     />
 
     <!-- Upload Button -->
@@ -80,7 +62,7 @@ const uploadButtonText = computed(() =>
         size="lg"
         color="blue"
         icon="i-heroicons-arrow-up-tray"
-        @click="handleUpload"
+        @click="uploadFiles"
       >
         {{ uploadButtonText }}
       </UButton>
@@ -88,7 +70,7 @@ const uploadButtonText = computed(() =>
 
     <!-- Existing Files -->
     <div
-      v-if="uploadedFiles.length > 0 || isLoading"
+      v-if="hasUploadedFiles || isLoading"
       class="space-y-4"
     >
       <div class="flex items-center justify-between">
@@ -98,7 +80,7 @@ const uploadButtonText = computed(() =>
           variant="ghost"
           size="sm"
           icon="i-heroicons-arrow-path"
-          @click="uploadFileStore.loadFiles"
+          @click="refreshFiles"
         >
           Refresh
         </UButton>
@@ -117,7 +99,7 @@ const uploadButtonText = computed(() =>
       <FileUploadUploadedList
         v-else
         :files="uploadedFiles"
-        @delete="uploadFileStore.deleteFile"
+        @delete="deleteFile"
       />
     </div>
 
