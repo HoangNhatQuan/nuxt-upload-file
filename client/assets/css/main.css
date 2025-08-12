@@ -1,0 +1,112 @@
+/* Global styles for File Uploader */
+
+/* Test CSS to ensure it's loading */
+body {
+  font-family: "Roboto", sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #fafafa !important;
+}
+
+.v-application {
+  background-color: #fafafa !important;
+}
+
+/* Dark mode support */
+.v-application--is-ltr.theme--dark {
+  background-color: #1f2937 !important;
+}
+
+/* Layout containers */
+.file-upload-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.header-container {
+  padding: 24px 0;
+  border-bottom: 1px solid #e0e0e0;
+  margin-bottom: 32px;
+}
+
+.footer-container {
+  margin-top: 64px;
+  padding: 24px 0;
+  border-top: 1px solid #e0e0e0;
+  text-align: center;
+}
+
+/* File upload components */
+.upload-zone {
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px dashed #ccc !important;
+  border-radius: 8px;
+  background-color: #fafafa;
+}
+
+.upload-zone:hover:not(.disabled) {
+  border-color: #1976d2 !important;
+}
+
+.upload-zone.dragover {
+  border-color: #1976d2 !important;
+  background-color: #e3f2fd !important;
+}
+
+.upload-zone.disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.file-card {
+  border-radius: 8px;
+  box-shadow: none !important;
+  transition: box-shadow 0.3s ease;
+}
+
+.v-application {
+  box-shadow: none !important;
+}
+
+.file-card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.file-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  background-color: #e3f2fd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+/* Utility classes */
+.min-width-0 {
+  min-width: 0;
+}
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+/* Test styles to verify CSS is loading */
+.css-test {
+  color: red !important;
+  font-weight: bold !important;
+}
