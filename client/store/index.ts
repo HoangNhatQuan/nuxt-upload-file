@@ -1,5 +1,8 @@
 import Vue from "vue";
 import Vuex, { Store } from "vuex";
+import fileQueueModule from "./modules/fileQueue";
+import uploadedFilesModule from "./modules/uploadedFiles";
+import uploadServiceModule from "./modules/uploadService";
 
 Vue.use(Vuex);
 
@@ -24,6 +27,11 @@ const createStore = (): Store<RootState> => {
       SET_SNACKBAR(state, payload: Partial<RootState["snackbar"]>) {
         state.snackbar = { ...state.snackbar, ...payload };
       },
+    },
+    modules: {
+      fileQueue: fileQueueModule,
+      uploadedFiles: uploadedFilesModule,
+      uploadService: uploadServiceModule,
     },
   });
 };

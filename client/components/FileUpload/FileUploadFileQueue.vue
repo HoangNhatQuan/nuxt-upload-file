@@ -55,7 +55,7 @@
               </p>
 
               <!-- Progress Bar -->
-              <div v-if="file.status === 'uploading'" class="mt-2">
+              <div v-if="file.status === FileStatus.UPLOADING" class="mt-2">
                 <v-progress-linear
                   :value="file.progress"
                   color="primary"
@@ -68,7 +68,7 @@
               </div>
 
               <!-- Status Messages -->
-              <div v-if="file.status === 'success'" class="mt-2">
+              <div v-if="file.status === FileStatus.SUCCESS" class="mt-2">
                 <v-chip small color="success" text-color="white">
                   <v-icon left small>mdi-check</v-icon>
                   Uploaded
@@ -84,7 +84,7 @@
             <!-- Actions -->
             <div class="flex-shrink-0">
               <v-btn
-                v-if="file.status === 'pending'"
+                v-if="file.status === FileStatus.PENDING"
                 icon
                 small
                 color="error"
@@ -102,6 +102,7 @@
 
 <script>
 import { fileUtils } from "~/utils/fileUtils";
+import { FileStatus } from "~/types/file";
 
 export default {
   name: "FileUploadFileQueue",
@@ -110,6 +111,11 @@ export default {
       type: Array,
       default: () => [],
     },
+  },
+  data() {
+    return {
+      FileStatus,
+    };
   },
   methods: {
     formatFileSize(bytes) {

@@ -69,8 +69,6 @@ export default {
     validateFile(file) {
       const validation = fileUtils.validateFile(file);
       if (!validation.isValid) {
-        console.error(validation.error);
-        // Show error toast notification
         if (this.$toast) {
           this.$toast.error(`${file.name}: ${validation.error}`);
         }
@@ -85,11 +83,9 @@ export default {
       if (validFiles.length > 0) {
         this.$emit("add-files", validFiles);
 
-        if (validFiles.length > 0) {
-          const successMessage = `${validFiles.length} file(s) added to upload queue.`;
-          if (this.$toast) {
-            this.$toast.success(successMessage);
-          }
+        const successMessage = `${validFiles.length} file(s) added to upload queue.`;
+        if (this.$toast) {
+          this.$toast.success(successMessage);
         }
       }
     },
@@ -97,11 +93,11 @@ export default {
     handleChange(e) {
       const target = e.target;
 
-      if (!target.files?.length) return;
+      if (!target.files?.length) {
+        return;
+      }
 
       this.handleFiles(target.files);
-
-      // Reset input
       target.value = "";
     },
 
