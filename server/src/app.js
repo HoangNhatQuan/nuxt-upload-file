@@ -21,15 +21,7 @@ const initializeApp = async () => {
     app.use(helmet());
     app.use(
       cors({
-        origin:
-          process.env.NODE_ENV === "production"
-            ? [
-                "https://nuxt-upload-file-2vkp.vercel.app",
-                "http://localhost:3000",
-                /^http:\/\/localhost:\d+$/,
-                /^http:\/\/172\.16\.0\.\d+:\d+$/,
-              ]
-            : [/^http:\/\/localhost:\d+$/, /^http:\/\/172\.16\.0\.\d+:\d+$/],
+        origin: "*",
         credentials: true,
       })
     );
