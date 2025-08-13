@@ -194,6 +194,6 @@ Thumbs.db
 /client/.nuxt
 /client/.output
 /client/.env
-
+/client/dist
 /server/node_modules
 /server/.env
