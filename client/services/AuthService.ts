@@ -23,7 +23,7 @@ export interface IAuthService {
 
 export class AuthService implements IAuthService {
   private getBaseUrl(): string {
-    return process.env.NUXT_API_BASE_URL || "http://localhost:3001/api";
+    return process.env.NUXT_API_BASE_URL || "https://nuxt-upload-file.vercel.app/api";
   }
 
   private buildUrl(endpoint: string): string {

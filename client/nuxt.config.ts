@@ -43,7 +43,7 @@ const config = {
    ** Axios module configuration
    */
   axios: {
-    baseURL: process.env.NUXT_API_BASE_URL || "http://localhost:3001/api",
+    baseURL: process.env.NUXT_API_BASE_URL || "https://nuxt-upload-file.vercel.app/api",
   },
   /*
    ** vuetify module configuration
