@@ -24,6 +24,18 @@
             </v-btn>
           </div>
           
+          <!-- Sign In Button -->
+          <div v-else class="d-flex align-center mr-4">
+            <v-btn
+              small
+              outlined
+              color="primary"
+              @click="handleSignIn"
+            >
+              Sign In
+            </v-btn>
+          </div>
+          
           <v-btn
             icon
             href="https://github.com/HoangNhatQuan/nuxt-upload-file"
@@ -71,6 +83,9 @@ export default {
       this.signOut();
       // Reload the page to clear all state
       window.location.reload();
+    },
+    handleSignIn() {
+      this.$store.commit('auth/SET_SHOW_AUTH_MODAL', true);
     },
   },
 };

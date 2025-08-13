@@ -26,6 +26,8 @@ const initializeApp = async () => {
             ? [
                 "https://nuxt-upload-file-2vkp.vercel.app",
                 "http://localhost:3000",
+                /^http:\/\/localhost:\d+$/,
+                /^http:\/\/172\.16\.0\.\d+:\d+$/,
               ]
             : [/^http:\/\/localhost:\d+$/, /^http:\/\/172\.16\.0\.\d+:\d+$/],
         credentials: true,

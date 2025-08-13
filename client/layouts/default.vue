@@ -18,14 +18,21 @@
         </v-btn>
       </template>
     </v-snackbar>
+
+    <!-- Auth Modal -->
+    <AuthModal />
   </v-app>
 </template>
 
 <script>
 import { mapState } from "vuex";
+import AuthModal from "~/components/AuthModal.vue";
 
 export default {
   name: "DefaultLayout",
+  components: {
+    AuthModal,
+  },
   computed: {
     ...mapState(["snackbar"]),
   },
