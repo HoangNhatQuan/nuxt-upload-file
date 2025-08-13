@@ -9,7 +9,8 @@ const {
   getFileSignedUrl,
   deleteFiles,
   deleteSingleFile,
-} = require("../../controllers/fileController");
+} = require("../../controllers");
+
 const { upload } = require("../../middlewares/upload");
 const {
   validateUpload,
@@ -39,22 +40,14 @@ router.post(
   "/upload",
   uploadLimiter,
   (req, res, next) => {
-    // Handle both "files" (multiple) and "file" (single) field names
     const uploadMiddleware = upload.any();
     uploadMiddleware(req, res, (err) => {
       if (err) {
         return next(err);
       }
-      // Ensure req.files exists for consistency
       if (!req.files) {
         req.files = [];
       }
-      // Log for debugging
-      console.log("Upload request received:", {
-        filesCount: req.files ? req.files.length : 0,
-        body: req.body,
-        headers: req.headers["content-type"],
-      });
       next();
     });
   },

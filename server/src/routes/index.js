@@ -1,5 +1,5 @@
 const express = require("express");
-const fileRoutes = require("./api/files");
+const fileRoutes = require("./files/index");
 
 const router = express.Router();
 
