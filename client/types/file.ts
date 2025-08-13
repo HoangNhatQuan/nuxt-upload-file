@@ -8,13 +8,27 @@ export enum FileStatus {
 }
 
 export interface UploadedFile {
-  filename: string;
-  originalName: string;
+  id: string;
+  path: string;
+  bucket: string;
   size: number;
-  mimetype: string;
+  mimeType: string;
+  name: string;
+  createdAt: string;
+  publicURL?: string;
+  urlSigned?: string;
+  metadata?: {
+    originalName: string;
+    description: string;
+    uploadedBy: string;
+  };
+  // Legacy fields for backward compatibility
+  filename?: string;
+  originalName?: string;
+  mimetype?: string;
   description?: string;
   url?: string;
-  updatedAt: string;
+  updatedAt?: string;
 }
 
 export interface QueuedFile {

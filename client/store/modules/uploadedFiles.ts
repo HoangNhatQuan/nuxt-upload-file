@@ -66,6 +66,7 @@ const uploadedFilesModule: Module<UploadedFilesModuleState, any> = {
 
       try {
         const files = await apiService.getFiles();
+        console.log("files", files);
         commit('SET_UPLOADED_FILES', files);
       } catch (error) {
         commit('SET_UPLOADED_FILES', []);

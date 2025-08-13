@@ -24,56 +24,50 @@
               <div class="file-icon-wrapper">
                 <div class="file-icon">
                   <img
-                    v-if="item.mimetype && item.mimetype.startsWith('image/')"
-                    :src="item.url"
-                    :alt="item.originalName"
+                    v-if="getMimeType(item) && getMimeType(item).startsWith('image/')"
+                    :src="getFileUrl(item)"
+                    :alt="getOriginalName(item)"
                     class="file-image"
                   />
                   <video
                     v-else-if="
-                      item.mimetype && item.mimetype.startsWith('video/')
+                      getMimeType(item) && getMimeType(item).startsWith('video/')
                     "
-                    :src="item.url"
+                    :src="getFileUrl(item)"
                     class="file-video"
                     preload="metadata"
                   >
                     <v-icon color="white" size="28">
-                      {{ getFileIcon(item.mimetype) }}
+                      {{ getFileIcon(getMimeType(item)) }}
                     </v-icon>
                   </video>
                   <v-icon v-else color="white" size="28">
-                    {{ getFileIcon(item.mimetype) }}
+                    {{ getFileIcon(getMimeType(item)) }}
                   </v-icon>
                 </div>
               </div>
 
               <div class="file-info">
                 <h4 class="file-name text-body-1 font-weight-medium">
-                  {{ item.originalName }}
+                  {{ getOriginalName(item) }}
                 </h4>
                 <div class="file-meta">
                   <span class="file-size text-caption grey--text">
                     {{ formatFileSize(item.size) }}
                   </span>
                   <span class="file-date text-caption grey--text">
-                    {{ formatDate(item.updatedAt) }}
+                    {{ formatDate(getDate(item)) }}
                   </span>
                 </div>
-                <p
-                  v-if="item.description"
-                  class="file-description text-caption grey--text mt-2"
-                >
-                  {{ item.description }}
-                </p>
               </div>
 
               <div class="file-actions">
                 <v-btn
-                  v-if="item.mimetype"
+                  v-if="getMimeType(item)"
                   icon
                   small
                   class="action-btn view-btn"
-                  :href="item.url"
+                  :href="getFileUrl(item)"
                   target="_blank"
                   title="View file"
                 >
@@ -83,7 +77,7 @@
                   icon
                   small
                   class="action-btn delete-btn"
-                  @click="$emit('delete', item.filename)"
+                  @click="$emit('delete', item.id)"
                   title="Delete file"
                 >
                   <v-icon size="20">mdi-delete</v-icon>
@@ -119,6 +113,26 @@ export default {
 
     getFileIcon(mimetype) {
       return fileUtils.getFileIcon(mimetype);
+    },
+
+    getMimeType(item) {
+      return item.mimeType || item.mimetype;
+    },
+
+    getOriginalName(item) {
+      return item.metadata?.originalName || item.originalName || item.name;
+    },
+
+    getDescription(item) {
+      return item.metadata?.description || item.description;
+    },
+
+    getFileUrl(item) {
+      return item.urlSigned || item.publicURL || item.url;
+    },
+
+    getDate(item) {
+      return item.createdAt || item.updatedAt;
     },
   },
 };

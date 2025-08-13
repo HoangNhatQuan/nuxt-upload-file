@@ -1,6 +1,7 @@
 const { supabase, BUCKET_NAME } = require("../config/database");
 const { v4: uuidv4 } = require("uuid");
 const path = require("path");
+const crypto = require("crypto");
 
 // Generate a stable key strategy: uuid.ext
 const generateKey = (originalName) => {

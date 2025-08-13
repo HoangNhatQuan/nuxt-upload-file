@@ -89,7 +89,14 @@ export class ApiService implements IApiService {
       throw new Error(errorData.error || "Upload failed");
     }
 
-    return response.json();
+    const result = await response.json();
+    
+    // Handle server response format: { success: true, data: { files: [...] } }
+    if (result.success && result.data && result.data.files && result.data.files.length > 0) {
+      return result.data.files[0]; // Return the first uploaded file
+    }
+    
+    throw new Error("Upload failed: Invalid response format");
   }
 
   async getFiles(params: GetFilesParams = {}): Promise<UploadedFile[]> {
@@ -122,14 +129,14 @@ export class ApiService implements IApiService {
     return [];
   }
 
-  async deleteFile(filename: string): Promise<void> {
+  async deleteFile(fileId: string): Promise<void> {
     const username = authStorage.getUsername();
     if (!username) {
       throw new Error("Authentication required");
     }
 
     await this.makeRequest(
-      this.buildUrl(`${this.endpoints.FILES}/${filename}`),
+      this.buildUrl(`${this.endpoints.FILES}/${fileId}`),
       {
         method: "DELETE",
         body: JSON.stringify({ username }),

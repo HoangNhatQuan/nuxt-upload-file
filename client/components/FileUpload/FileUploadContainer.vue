@@ -160,16 +160,15 @@ export default {
       }
     },
 
-    async handleDeleteFile(filename) {
+    async handleDeleteFile(fileId) {
       try {
-        // Check authentication before deleting file
         if (!this.$store.state.auth?.isAuthenticated) {
           console.log('Not authenticated, opening modal for file delete');
           this.$store.commit('auth/SET_SHOW_AUTH_MODAL', true);
           return;
         }
         
-        await this.deleteFile(filename);
+        await this.deleteFile(fileId);
       } catch (error) {
         if (error.message === 'Authentication required') {
           this.$store.commit('auth/SET_SHOW_AUTH_MODAL', true);
@@ -182,16 +181,13 @@ export default {
     async handleUploadClick() {
       try {
         // Check authentication before upload
-        console.log('Upload click - isAuthenticated:', this.$store.state.auth?.isAuthenticated);
         if (!this.$store.state.auth?.isAuthenticated) {
-          console.log('Not authenticated, opening modal');
           this.$store.commit('auth/SET_SHOW_AUTH_MODAL', true);
           return;
         }
         
         await this.$store.dispatch('uploadService/uploadQueuedFiles');
       } catch (error) {
-        console.log('Upload error:', error.message);
         if (error.message === 'Authentication required') {
           this.$store.commit('auth/SET_SHOW_AUTH_MODAL', true);
         } else if (this.$toast) {

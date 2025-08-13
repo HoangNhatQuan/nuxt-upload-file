@@ -8,7 +8,9 @@ const { supabase, BUCKET_NAME } = require("../config/database");
  */
 const uploadUserFile = async (req, res) => {
   try {
-    const { username } = req;
+    const { username } = req.body;
+
+    console.log("username", username);
 
     if (!req.files || req.files.length === 0) {
       return res.status(400).json({
@@ -97,7 +99,7 @@ const uploadUserFile = async (req, res) => {
  */
 const getUserFiles = async (req, res) => {
   try {
-    const { username } = req;
+    const { username } = req.query;
 
     const userFiles = await userService.getUserFiles(username);
     const existingFiles = [];
@@ -153,7 +155,7 @@ const getUserFiles = async (req, res) => {
  */
 const deleteUserFile = async (req, res) => {
   try {
-    const { username } = req;
+    const { username } = req.body;
     const { id } = req.params;
 
     const fileItem = await userService.findUserFileById(username, id);
@@ -200,7 +202,7 @@ const deleteUserFile = async (req, res) => {
  */
 const getUserFileUrl = async (req, res) => {
   try {
-    const { username } = req;
+    const { username } = req.query;
     const { id } = req.params;
     const expiresIn = parseInt(req.query.expiresIn) || 15 * 60;
 
