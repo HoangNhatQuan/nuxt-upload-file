@@ -111,7 +111,6 @@ export default {
     handleDragOver(e) {
       e.preventDefault();
       
-      // Only allow drag over if authenticated
       if (this.$store.state.auth?.isAuthenticated) {
         this.isDragOver = true;
       }

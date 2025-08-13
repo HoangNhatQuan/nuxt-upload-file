@@ -24,11 +24,8 @@ export function useAuth() {
   const username = ref<string | null>(authStorage.getUsername());
   const isLoading = ref(false);
   const error = ref<string | null>(null);
-
-  // Computed properties
   const isAuthenticated = computed(() => username.value !== null);
 
-  // Watch for username changes and sync with storage
   watch(username, (newUsername) => {
     if (newUsername) {
       authStorage.setUsername(newUsername);

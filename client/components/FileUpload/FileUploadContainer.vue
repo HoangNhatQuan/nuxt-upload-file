@@ -97,7 +97,6 @@ export default {
     }
   },
   watch: {
-    // Watch for authentication state changes
     '$store.state.auth.isAuthenticated': {
       immediate: true,
       handler(newValue) {}
