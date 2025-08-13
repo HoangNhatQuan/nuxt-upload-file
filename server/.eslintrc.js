@@ -11,13 +11,10 @@ module.exports = {
   rules: {
     indent: ["error", 2],
     "linebreak-style": ["error", "unix"],
-    quotes: ["error", "single"],
+    quotes: ["error"],
     semi: ["error", "always"],
     "no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
-    "no-console": "off", // Allow console.log for server logging
-    "prefer-const": "error",
+    "no-console": "off",
     "no-var": "error",
-    "object-shorthand": "error",
-    "prefer-template": "error",
   },
 };

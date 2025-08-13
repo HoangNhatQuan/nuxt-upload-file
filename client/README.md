@@ -1,167 +1,291 @@
-# File Upload Client
+# File Upload Application
 
-A modern file upload application built with Nuxt 3, featuring a comprehensive upload flow with drag-and-drop support, file queuing, and real-time progress tracking.
+A complete web application for secure file uploads built with modern technologies. This project demonstrates best practices in full-stack development with a focus on security, user experience, and code quality.
 
-## Features
+## 🚀 Features
 
-### 🚀 **Complete Upload Flow**
+### Frontend (Nuxt.js)
 
-1. **Pre-upload Check**: Display existing files with thumbnails and type icons
-2. **File Selection**: Drag-and-drop or "Choose files" with staging area
-3. **Explicit Upload**: Manual upload button with per-file progress
-4. **File Management**: Preview, download, and delete uploaded files
+- ✅ Modern, responsive Material Design UI
+- ✅ Drag and drop file upload
+- ✅ Real-time upload progress tracking
+- ✅ Image preview and gallery view
+- ✅ File management (view, download, delete)
+- ✅ Toast notifications for user feedback
+- ✅ Mobile-friendly responsive design
+- ✅ Client-side file validation
 
-### 📁 **Universal File Support**
+### Backend (Express.js)
 
-- **Images**: JPEG, PNG, GIF, WebP, HEIC
-- **Videos**: MP4, AVI, MOV, WebM, and more
-- **Audio**: MP3, WAV, AAC, FLAC, and more
-- **Documents**: PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX
-- **Archives**: ZIP, RAR, 7Z, TAR, GZ
-- **All other file types** supported
+- ✅ Secure file upload with validation
+- ✅ Image file type filtering
+- ✅ File size limits (5MB)
+- ✅ Rate limiting protection
+- ✅ CORS configuration
+- ✅ Helmet security headers
+- ✅ Directory traversal protection
+- ✅ Comprehensive error handling
+- ✅ RESTful API design
 
-### 🎯 **Key Features**
+### Security Features (OWASP Compliance)
 
-- **Drag & Drop**: Intuitive file selection with visual feedback
-- **File Queue**: Stage multiple files before uploading
-- **Progress Tracking**: Real-time upload progress with speed and time estimates
-- **File Previews**: Image thumbnails and type-specific icons
-- **Duplicate Handling**: Automatic naming conflict resolution
-- **Error Handling**: Comprehensive error messages and retry options
-- **Responsive Design**: Works on desktop and mobile devices
+- ✅ Input validation and sanitization
+- ✅ File type and size restrictions
+- ✅ Rate limiting to prevent abuse
+- ✅ Security headers (XSS protection)
+- ✅ CORS protection
+- ✅ Secure file handling
+- ✅ Error handling without information leakage
 
-### 🔧 **Technical Features**
+## 🛠️ Technology Stack
 
-- **Server API Integration**: Uses Express.js backend API
-- **TypeScript**: Full type safety and IntelliSense
-- **Vue 3 Composition API**: Modern reactive state management
-- **Pinia Store**: Centralized state management
-- **Tailwind CSS**: Utility-first styling
-- **Nuxt UI**: Pre-built components and design system
+### Frontend
 
-## Getting Started
+- **Nuxt.js** - Vue.js framework for server-side rendering
+- **Vuetify.js** - Material Design component library
+- **Axios** - HTTP client for API communication
+- **SCSS** - CSS preprocessor for styling
 
-### Prerequisites
+### Backend
 
-- Node.js 18+
-- yarn (recommended) or npm
+- **Express.js** - Node.js web framework
+- **Multer** - File upload middleware
+- **Helmet** - Security headers middleware
+- **CORS** - Cross-origin resource sharing
+- **Express Rate Limit** - Rate limiting protection
+- **Express Validator** - Input validation
 
-### Environment Setup
+## 📋 Prerequisites
 
-1. **Copy environment file**:
-   ```bash
-   cp .env.example .env
-   ```
+- Node.js (v14 or higher)
+- npm or yarn
+- Git
 
-2. **Configure API URL** (if needed):
-   ```bash
-   # Default: http://localhost:3001/api
-   API_BASE_URL=http://localhost:3001/api
-   ```
+## 🚀 Quick Start
 
-### Installation
+### 1. Clone the Repository
 
-1. **Install dependencies**:
+```bash
+git clone <repository-url>
+cd assignment-kinobi
+```
 
-   ```bash
-   yarn install
-   ```
+### 2. Backend Setup
 
-2. **Start the development server**:
+```bash
+# Navigate to server directory
+cd server
 
-   ```bash
-   yarn run dev
-   ```
+# Install dependencies
+npm install
 
-3. **Start the backend server** (in a separate terminal):
+# Start the development server
+npm run dev
+```
 
-   ```bash
-   cd ../server
-   npm start
-   ```
+The backend will be running on `http://localhost:3001`
 
-4. **Open your browser**:
-   Navigate to [http://localhost:3000](http://localhost:3000)
+### 3. Frontend Setup
 
-## Usage
+```bash
+# Open a new terminal and navigate to client directory
+cd client
 
-### Uploading Files
+# Install dependencies
+yarn install
 
-1. **Select Files**:
+# Start the development server
+yarn run dev
+```
 
-   - Drag and drop files onto the upload area
-   - Or click "Choose files" to browse
-   - Multiple files can be selected at once
+The frontend will be running on `http://localhost:3000`
 
-2. **Review Queue**:
+### 4. Access the Application
 
-   - Files appear in the staging area
-   - Preview images and file information
-   - Remove individual files or clear all
+Open your browser and navigate to `http://localhost:3000`
 
-3. **Upload**:
-   - Click the "Upload" button to start
-   - Watch real-time progress for each file
-   - Files are uploaded sequentially
-
-### Managing Files
-
-- **View**: Click the eye icon to preview images
-- **Download**: Files are served directly from the server
-- **Delete**: Click the trash icon to remove files
-- **Refresh**: Click the refresh button to reload the file list
-
-## API Integration
-
-The client communicates with the Express.js backend API:
-
-- `GET /api/files` - List all uploaded files
-- `POST /api/upload` - Upload a new file
-- `DELETE /api/files/:filename` - Delete a file
-- `GET /api/files/:filename` - Download/view a file
-
-## File Constraints
-
-- **Maximum file size**: 50MB per file
-- **Supported formats**: All file types
-- **Storage**: Files stored on server filesystem
-- **Security**: File type validation and size limits
-
-## Development
-
-### Project Structure
+## 📁 Project Structure
 
 ```
-src/
+assignment-kinobi/                
+/server/src/           # Backend (Express.js)
+├── config/           # Configuration files
+│   ├── database.js   # Database connection and settings
+│   └── upload.js     # Upload configuration and file type definitions
+├── controllers/      # Request handlers and business logic
+│   └── fileController.js
+├── middlewares/      # Reusable middleware functions
+│   ├── errorHandler.js
+│   ├── upload.js     # Multer configuration
+│   └── validation.js # Request validation
+├── models/           # Data models and database operations
+│   └── file.js
+├── routes/           # Route definitions
+│   ├── api/
+│   │   └── files.js  # File-related routes
+│   └── index.js      # Main routes index
+├── utils/            # Utility functions
+│   └── security.js   # Security utilities
+├── app.js            # Express app configuration
+└── server.js         # Server entry point
+
+/client/src/                    # Frontend (Nuxt.js)
 ├── components/file-upload/
 │   ├── basic.vue          # Basic upload interface
 │   ├── dialog.vue         # Modal upload interface
 │   ├── file-queue.vue     # File staging area
 │   ├── uploaded-list.vue  # File management list
 │   └── uploader.vue       # Drag & drop uploader
-├── lib/
-│   └── api.ts            # API service
 ├── stores/
 │   └── use-upload-file.ts # Upload state management
 └── pages/
     └── index.vue         # Main application page
 ```
 
-### Available Scripts
+## 🔧 Configuration
 
-- `yarn run dev` - Start development server
-- `yarn run build` - Build for production
-- `yarn run preview` - Preview production build
-- `yarn run lint` - Run ESLint
-- `yarn run lint:fix` - Fix ESLint errors
+### Environment Variables
 
-## Browser Support
+#### Backend (.env in server directory)
 
-- Chrome 90+
-- Firefox 88+
-- Safari 14+
-- Edge 90+
+```env
+PORT=3001
+NODE_ENV=development
+```
 
-## License
+#### Frontend (.env in client directory)
 
-MIT License - see LICENSE file for details
+```env
+NODE_ENV=development
+```
+
+### API Configuration
+
+The frontend is configured to connect to the backend at `http://localhost:3001`. For production, update the `baseURL` in `client/nuxt.config.js`.
+
+## 📖 API Documentation
+
+### Endpoints
+
+| Method | Endpoint               | Description            |
+| ------ | ---------------------- | ---------------------- |
+| GET    | `/api/health`          | Health check           |
+| GET    | `/api/files`           | Get all uploaded files |
+| POST   | `/api/upload`          | Upload a new file      |
+| GET    | `/api/files/:filename` | Get a specific file    |
+| DELETE | `/api/files/:filename` | Delete a file          |
+
+### File Upload Limits
+
+- **File Size**: Maximum 5MB
+- **File Types**: JPEG, JPG, PNG, GIF, WebP, Audio, doc/pdf, video/*
+- **Files per Request**: 1 file or multi files
+- **Rate Limit**: 10 uploads per 15 minutes per IP
+
+## 🚀 Production Deployment
+
+### Backend Deployment
+
+1. Set `NODE_ENV=production`
+2. Configure CORS origins for your domain
+3. Use a reverse proxy (nginx) for static file serving
+4. Implement proper logging
+5. Use HTTPS
+6. Consider using a CDN for file serving
+
+### Frontend Deployment
+
+1. Update API base URL in `nuxt.config.js`
+2. Set `NODE_ENV=production`
+3. Build the application: `npm run build`
+4. Deploy the generated files to your hosting provider
+
+### Recommended Hosting
+
+- **Backend**: Heroku, AWS EC2, DigitalOcean
+- **Frontend**: Vercel, Netlify, AWS S3 + CloudFront
+
+## 🔒 Security Features
+
+This application implements several security measures to protect against common web vulnerabilities:
+
+1. **Input Validation**: All inputs are validated and sanitized
+2. **File Upload Security**: Secure file handling with type and size restrictions
+3. **Rate Limiting**: Prevents abuse and DoS attacks
+4. **Security Headers**: Helmet.js for XSS and other header-based attacks
+5. **CORS Protection**: Configured for specific origins
+6. **Error Handling**: Secure error messages without information leakage
+
+## 🧪 Testing
+
+### Manual Testing Checklist
+
+- [ ] File upload with different image types
+- [ ] File size validation (try files > 5MB)
+- [ ] File type validation (try non-image files)
+- [ ] Drag and drop functionality
+- [ ] Upload progress tracking
+- [ ] File preview and download
+- [ ] File deletion with confirmation
+- [ ] Responsive design on mobile devices
+- [ ] Error handling for network issues
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+1. **CORS Errors**
+
+   - Ensure backend CORS is configured for `http://localhost:3000`
+   - Check that both servers are running
+
+2. **File Upload Fails**
+
+   - Verify file size is under 5MB
+   - Ensure file is an image (JPEG, PNG, GIF, WebP)
+   - Check browser console for error messages
+
+3. **API Connection Issues**
+
+   - Verify backend server is running on port 3001
+   - Check network requests in browser dev tools
+
+4. **Build Errors**
+   - Clear node_modules and reinstall dependencies
+   - Ensure Node.js version is 14 or higher
+
+## 📝 Development Guidelines
+
+### Code Style
+
+- Follow Vue.js style guide for frontend
+- Use ESLint for code quality
+- Implement proper error handling
+- Add loading states for async operations
+
+### Best Practices
+
+- Use Vuetify components for consistency
+- Implement proper validation
+- Add comprehensive error handling
+- Test on multiple devices and browsers
+- Follow security best practices
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+## 🙏 Acknowledgments
+
+- Nuxt.js team for the amazing framework
+- Vuetify team for the Material Design components
+- Express.js community for the robust backend framework
+- OWASP for security guidelines and best practices
