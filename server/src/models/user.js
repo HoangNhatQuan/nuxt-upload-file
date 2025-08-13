@@ -7,8 +7,6 @@ const fileItemSchema = new mongoose.Schema(
     id: {
       type: String,
       default: () => uuidv4(),
-      required: true,
-      unique: true,
     },
     path: {
       type: String,

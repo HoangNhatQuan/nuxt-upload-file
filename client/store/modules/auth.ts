@@ -21,6 +21,13 @@ export const mutations = {
   SET_USERNAME(state: AuthState, username: string | null) {
     state.username = username;
     state.isAuthenticated = !!username;
+    
+    // Save to storage when username is set
+    if (username) {
+      authStorage.setUsername(username);
+    } else {
+      authStorage.clear();
+    }
   },
   SET_LOADING(state: AuthState, isLoading: boolean) {
     state.isLoading = isLoading;

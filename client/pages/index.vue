@@ -1,17 +1,6 @@
 <template>
   <v-container class="file-upload-container">
     <Header />
-    
-    <!-- Debug section for testing -->
-    <div v-if="!$store.state.auth?.isAuthenticated" class="mb-4">
-      <v-alert type="info" class="mb-2">
-        You are not authenticated. Try uploading a file or click the test button below.
-      </v-alert>
-      <v-btn color="primary" @click="testOpenModal">
-        Test Open Auth Modal
-      </v-btn>
-    </div>
-    
     <FileUpload />
     <Footer />
     
@@ -44,6 +33,19 @@ export default {
   methods: {
     testOpenModal() {
       this.$store.commit('auth/SET_SHOW_AUTH_MODAL', true);
+    },
+    testStorage() {
+      const username = localStorage.getItem('app.auth.username');
+      alert(`Storage test: ${username || 'No username found'}`);
+    },
+    clearStorage() {
+      localStorage.removeItem('app.auth.username');
+      this.$store.commit('auth/SET_USERNAME', null);
+      alert('Storage cleared');
+    },
+    getStorageStatus() {
+      const username = localStorage.getItem('app.auth.username');
+      return username ? `Found: ${username}` : 'Empty';
     },
   },
 };

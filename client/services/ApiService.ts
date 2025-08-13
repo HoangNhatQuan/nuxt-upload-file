@@ -26,7 +26,7 @@ export interface ApiEndpoints {
 
 export class ApiService implements IApiService {
   private readonly endpoints: ApiEndpoints = {
-    UPLOAD: "/upload",
+    UPLOAD: "/files/upload",
     FILES: "/files",
     HEALTH: "/health",
     CONFIG: "/upload/config",
@@ -42,7 +42,7 @@ export class ApiService implements IApiService {
 
   private async makeRequest(
     url: string,
-    options: RequestInit = {}
+    options: RequestInit = {},
   ): Promise<any> {
     const response = await fetch(url, {
       ...options,

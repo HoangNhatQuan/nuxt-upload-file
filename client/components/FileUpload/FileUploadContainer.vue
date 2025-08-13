@@ -45,7 +45,7 @@
       :files="uploadedFiles"
       :is-loading="isLoading"
       @refresh="handleLoadFiles"
-      @delete="deleteFile"
+      @delete="handleDeleteFile"
     />
   </div>
 </template>
@@ -96,6 +96,15 @@ export default {
       this.loadFiles();
     }
   },
+  watch: {
+    // Watch for authentication state changes
+    '$store.state.auth.isAuthenticated': {
+      immediate: true,
+      handler(newValue) {
+        console.log('Auth state changed:', newValue);
+      }
+    }
+  },
   methods: {
     // File Queue Actions
     ...mapActions('fileQueue', [
@@ -114,6 +123,13 @@ export default {
 
     async handleAddFiles(files) {
       try {
+        // Check authentication before adding files to queue
+        if (!this.$store.state.auth?.isAuthenticated) {
+          console.log('Not authenticated, opening modal for add files');
+          this.$store.commit('auth/SET_SHOW_AUTH_MODAL', true);
+          return;
+        }
+        
         const result = await this.addFilesToQueue(files);
         if (result.success && this.$toast) {
           this.$toast.success(`${result.count} file(s) added to upload queue.`);
@@ -129,6 +145,7 @@ export default {
       try {
         // Check authentication before loading files
         if (!this.$store.state.auth?.isAuthenticated) {
+          console.log('Not authenticated, opening modal for file load');
           this.$store.commit('auth/SET_SHOW_AUTH_MODAL', true);
           return;
         }
@@ -139,6 +156,25 @@ export default {
           this.$store.commit('auth/SET_SHOW_AUTH_MODAL', true);
         } else if (this.$toast) {
           this.$toast.error("Failed to load files");
+        }
+      }
+    },
+
+    async handleDeleteFile(filename) {
+      try {
+        // Check authentication before deleting file
+        if (!this.$store.state.auth?.isAuthenticated) {
+          console.log('Not authenticated, opening modal for file delete');
+          this.$store.commit('auth/SET_SHOW_AUTH_MODAL', true);
+          return;
+        }
+        
+        await this.deleteFile(filename);
+      } catch (error) {
+        if (error.message === 'Authentication required') {
+          this.$store.commit('auth/SET_SHOW_AUTH_MODAL', true);
+        } else if (this.$toast) {
+          this.$toast.error("Failed to delete file");
         }
       }
     },

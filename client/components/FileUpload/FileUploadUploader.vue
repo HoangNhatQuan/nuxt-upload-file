@@ -93,6 +93,13 @@ export default {
     handleChange(e) {
       const target = e.target;
 
+      // Check authentication before processing selected files
+      if (!this.$store.state.auth?.isAuthenticated) {
+        this.$store.commit('auth/SET_SHOW_AUTH_MODAL', true);
+        target.value = "";
+        return;
+      }
+
       if (!target.files?.length) {
         return;
       }
@@ -103,7 +110,11 @@ export default {
 
     handleDragOver(e) {
       e.preventDefault();
-      this.isDragOver = true;
+      
+      // Only allow drag over if authenticated
+      if (this.$store.state.auth?.isAuthenticated) {
+        this.isDragOver = true;
+      }
     },
 
     handleDragLeave(e) {
@@ -115,12 +126,26 @@ export default {
       e.preventDefault();
       this.isDragOver = false;
 
+      // Check authentication before allowing file drop
+      if (!this.$store.state.auth?.isAuthenticated) {
+        console.log('Not authenticated, opening modal for file drop');
+        this.$store.commit('auth/SET_SHOW_AUTH_MODAL', true);
+        return;
+      }
+
       if (!e.dataTransfer?.files?.length) return;
 
       await this.handleFiles(e.dataTransfer.files);
     },
 
     triggerFileInput() {
+      // Check authentication before allowing file selection
+      if (!this.$store.state.auth?.isAuthenticated) {
+        console.log('Not authenticated, opening modal for file selection');
+        this.$store.commit('auth/SET_SHOW_AUTH_MODAL', true);
+        return;
+      }
+      
       if (!this.disabled) {
         this.$refs.inputFile.click();
       }

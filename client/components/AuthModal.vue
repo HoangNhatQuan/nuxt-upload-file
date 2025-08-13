@@ -34,19 +34,6 @@
             @input="clearError"
           />
 
-          <!-- Forgot Password Link (Sign In only) -->
-          <div v-if="isSignIn" class="text-right mb-4">
-            <v-btn
-              text
-              small
-              color="primary"
-              class="text-caption"
-              @click="handleForgotPassword"
-            >
-              Forgot Password?
-            </v-btn>
-          </div>
-
           <!-- Submit Button -->
           <v-btn
             block
@@ -140,6 +127,10 @@ export default {
       if (result.success) {
         this.$store.commit('auth/SET_SHOW_AUTH_MODAL', false);
         this.form = { username: '', password: '' };
+        
+        this.$nextTick(() => {
+          this.$store.dispatch('uploadedFiles/loadFiles');
+        });
       }
     },
 
@@ -147,11 +138,6 @@ export default {
       this.isSignIn = !this.isSignIn;
       this.clearError();
       this.form = { username: '', password: '' };
-    },
-
-    handleForgotPassword() {
-      // TODO: Implement forgot password functionality
-      console.log('Forgot password clicked');
     },
   },
   watch: {
