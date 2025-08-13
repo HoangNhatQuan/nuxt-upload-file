@@ -1,6 +1,8 @@
 const userService = require("../services/userService");
 const { uploadFile, removeFiles, getFileUrl } = require("../models/file");
 const { supabase, BUCKET_NAME } = require("../config/database");
+const crypto = require("crypto");
+
 /**
  * Upload file for a specific user
  * @param {Object} req - Express request object
@@ -22,12 +24,17 @@ const uploadUserFile = async (req, res) => {
 
     for (const file of req.files) {
       try {
-        // Upload to Supabase
+        const checksum = crypto
+          .createHash("md5")
+          .update(file.buffer)
+          .digest("hex");
+
         const uploadResult = await uploadFile({
           file,
           contentType: file.mimetype,
           userId: username,
           description: req.body.description || "",
+          checksum: checksum,
         });
 
         // Create file item for user

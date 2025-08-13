@@ -128,7 +128,7 @@ export default {
     },
 
     getFileUrl(item) {
-      return item.urlSigned || item.publicURL || item.url;
+      return 'https://ougcutnevvvrbucgxgla.supabase.co/storage/v1/object/public/kinobi/'+item.path;
     },
 
     getDate(item) {

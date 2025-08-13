@@ -1,17 +1,12 @@
 const { supabase, BUCKET_NAME } = require("../config/database");
 const { v4: uuidv4 } = require("uuid");
 const path = require("path");
-const crypto = require("crypto");
 
 // Generate a stable key strategy: uuid.ext
 const generateKey = (originalName) => {
   const ext = path.extname(originalName);
   const uuid = uuidv4();
   return `${uuid}${ext}`;
-};
-
-const calculateChecksum = (buffer) => {
-  return crypto.createHash("md5").update(buffer).digest("hex");
 };
 
 // Upload file to Supabase storage
@@ -27,7 +22,7 @@ const uploadFile = async ({
 
     const { data, error } = await supabase.storage
       .from(BUCKET_NAME)
-      .upload(key, calculateChecksum(file.buffer), {
+      .upload(key, file.buffer, {
         contentType: contentType,
         metadata: {
           originalName: file.originalname,
