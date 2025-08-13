@@ -23,7 +23,10 @@ const initializeApp = async () => {
       cors({
         origin:
           process.env.NODE_ENV === "production"
-            ? ["https://project-uploader-phi.vercel.app"]
+            ? [
+                "https://nuxt-upload-file-2vkp.vercel.app",
+                "http://localhost:3000/",
+              ]
             : [/^http:\/\/localhost:\d+$/, /^http:\/\/172\.16\.0\.\d+:\d+$/],
         credentials: true,
       })
