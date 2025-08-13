@@ -100,9 +100,7 @@ export default {
     // Watch for authentication state changes
     '$store.state.auth.isAuthenticated': {
       immediate: true,
-      handler(newValue) {
-        console.log('Auth state changed:', newValue);
-      }
+      handler(newValue) {}
     }
   },
   methods: {
@@ -123,9 +121,7 @@ export default {
 
     async handleAddFiles(files) {
       try {
-        // Check authentication before adding files to queue
         if (!this.$store.state.auth?.isAuthenticated) {
-          console.log('Not authenticated, opening modal for add files');
           this.$store.commit('auth/SET_SHOW_AUTH_MODAL', true);
           return;
         }
@@ -143,9 +139,7 @@ export default {
 
     async handleLoadFiles() {
       try {
-        // Check authentication before loading files
         if (!this.$store.state.auth?.isAuthenticated) {
-          console.log('Not authenticated, opening modal for file load');
           this.$store.commit('auth/SET_SHOW_AUTH_MODAL', true);
           return;
         }
@@ -163,7 +157,6 @@ export default {
     async handleDeleteFile(fileId) {
       try {
         if (!this.$store.state.auth?.isAuthenticated) {
-          console.log('Not authenticated, opening modal for file delete');
           this.$store.commit('auth/SET_SHOW_AUTH_MODAL', true);
           return;
         }
@@ -180,7 +173,6 @@ export default {
 
     async handleUploadClick() {
       try {
-        // Check authentication before upload
         if (!this.$store.state.auth?.isAuthenticated) {
           this.$store.commit('auth/SET_SHOW_AUTH_MODAL', true);
           return;

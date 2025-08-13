@@ -10,8 +10,6 @@ const uploadUserFile = async (req, res) => {
   try {
     const { username } = req.body;
 
-    console.log("username", username);
-
     if (!req.files || req.files.length === 0) {
       return res.status(400).json({
         success: false,

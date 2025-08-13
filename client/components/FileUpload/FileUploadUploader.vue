@@ -126,9 +126,7 @@ export default {
       e.preventDefault();
       this.isDragOver = false;
 
-      // Check authentication before allowing file drop
       if (!this.$store.state.auth?.isAuthenticated) {
-        console.log('Not authenticated, opening modal for file drop');
         this.$store.commit('auth/SET_SHOW_AUTH_MODAL', true);
         return;
       }
@@ -139,9 +137,7 @@ export default {
     },
 
     triggerFileInput() {
-      // Check authentication before allowing file selection
       if (!this.$store.state.auth?.isAuthenticated) {
-        console.log('Not authenticated, opening modal for file selection');
         this.$store.commit('auth/SET_SHOW_AUTH_MODAL', true);
         return;
       }

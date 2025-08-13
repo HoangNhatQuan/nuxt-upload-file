@@ -152,9 +152,7 @@ export default {
         });
       }
     },
-    showAuthModal(newValue) {
-      console.log('AuthModal: showAuthModal changed to:', newValue);
-    },
+    showAuthModal(newValue) {},
   },
 };
 </script>

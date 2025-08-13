@@ -40,7 +40,6 @@ class ToastService {
   }
 
   info(message: string, options?: ToastOptions) {
-    console.log("Toast info called:", message);
     this.createSnackbar(message, {
       ...options,
       color: "info",

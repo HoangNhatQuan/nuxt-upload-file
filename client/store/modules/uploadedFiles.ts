@@ -37,8 +37,8 @@ const uploadedFilesModule: Module<UploadedFilesModuleState, any> = {
       state.uploadedFiles.unshift(file);
     },
     
-    REMOVE_UPLOADED_FILE(state, filename: string) {
-      state.uploadedFiles = state.uploadedFiles.filter(file => file.filename !== filename);
+    REMOVE_UPLOADED_FILE(state, fileId: string) {
+      state.uploadedFiles = state.uploadedFiles.filter(file => file.id !== fileId);
     },
 
     SET_LOADING(state, isLoading: boolean) {
@@ -66,7 +66,6 @@ const uploadedFilesModule: Module<UploadedFilesModuleState, any> = {
 
       try {
         const files = await apiService.getFiles();
-        console.log("files", files);
         commit('SET_UPLOADED_FILES', files);
       } catch (error) {
         commit('SET_UPLOADED_FILES', []);
@@ -76,12 +75,13 @@ const uploadedFilesModule: Module<UploadedFilesModuleState, any> = {
       }
     },
 
-    async deleteFile({ commit }, filename: string) {
+    async deleteFile({ commit, state }, fileId: string) {
       try {
-        await apiService.deleteFile(filename);
-        commit('REMOVE_UPLOADED_FILE', filename);
+        await apiService.deleteFile(fileId);
+        commit('REMOVE_UPLOADED_FILE', fileId);
         commit('SET_SUCCESS', 'File deleted successfully!');
       } catch (error) {
+        console.error('Delete file error:', error);
         commit('SET_ERROR', 'Failed to delete file');
         throw error;
       }
