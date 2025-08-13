@@ -1,4 +1,5 @@
 import { UploadedFile, FileUploadOptions } from "~/types/file";
+import { authStorage } from "~/utils/authStorage";
 
 export interface IApiService {
   uploadFile(file: File, options?: FileUploadOptions): Promise<UploadedFile>;
@@ -65,8 +66,14 @@ export class ApiService implements IApiService {
     file: File,
     options: FileUploadOptions = {}
   ): Promise<UploadedFile> {
+    const username = authStorage.getUsername();
+    if (!username) {
+      throw new Error("Authentication required");
+    }
+
     const formData = new FormData();
     formData.append("file", file);
+    formData.append("username", username);
 
     if (options.description) {
       formData.append("description", options.description);
@@ -86,7 +93,13 @@ export class ApiService implements IApiService {
   }
 
   async getFiles(params: GetFilesParams = {}): Promise<UploadedFile[]> {
+    const username = authStorage.getUsername();
+    if (!username) {
+      throw new Error("Authentication required");
+    }
+
     const url = new URL(this.buildUrl(this.endpoints.FILES));
+    url.searchParams.append("username", username);
 
     if (params.prefix) url.searchParams.append("prefix", params.prefix);
     if (params.limit) url.searchParams.append("limit", params.limit.toString());
@@ -102,35 +115,54 @@ export class ApiService implements IApiService {
       return response.files;
     } else if (response && response.files) {
       return [response.files];
+    } else if (response && response.data && Array.isArray(response.data.files)) {
+      return response.data.files;
     }
 
     return [];
   }
 
   async deleteFile(filename: string): Promise<void> {
+    const username = authStorage.getUsername();
+    if (!username) {
+      throw new Error("Authentication required");
+    }
+
     await this.makeRequest(
       this.buildUrl(`${this.endpoints.FILES}/${filename}`),
       {
         method: "DELETE",
+        body: JSON.stringify({ username }),
       }
     );
   }
 
   async deleteFiles(filenames: string[]): Promise<void> {
+    const username = authStorage.getUsername();
+    if (!username) {
+      throw new Error("Authentication required");
+    }
+
     await this.makeRequest(this.buildUrl(this.endpoints.FILES), {
       method: "DELETE",
-      body: JSON.stringify({ keys: filenames }),
+      body: JSON.stringify({ keys: filenames, username }),
     });
   }
 
   async getFileUrl(filename: string, expiresIn?: number): Promise<string> {
+    const username = authStorage.getUsername();
+    if (!username) {
+      throw new Error("Authentication required");
+    }
+
     const url = new URL(
       this.buildUrl(`${this.endpoints.FILES}/${filename}/url`)
     );
+    url.searchParams.append("username", username);
     if (expiresIn) url.searchParams.append("expiresIn", expiresIn.toString());
 
     const response = await this.makeRequest(url.toString());
-    return response.url;
+    return response.url || response.data?.url;
   }
 
   async getHealth(): Promise<any> {

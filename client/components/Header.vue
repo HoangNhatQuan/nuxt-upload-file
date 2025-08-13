@@ -11,6 +11,19 @@
       </v-col>
       <v-col cols="auto">
         <div class="d-flex align-center">
+          <!-- User Info and Sign Out -->
+          <div v-if="isAuthenticated" class="d-flex align-center mr-4">
+            <span class="text-body-2 mr-2">Welcome, {{ username }}!</span>
+            <v-btn
+              small
+              outlined
+              color="primary"
+              @click="handleSignOut"
+            >
+              Sign Out
+            </v-btn>
+          </div>
+          
           <v-btn
             icon
             href="https://github.com/HoangNhatQuan/nuxt-upload-file"
@@ -29,6 +42,7 @@
 </template>
 
 <script>
+import { mapState, mapActions } from 'vuex';
 import GithubLogoIcon from "./GithubLogoIcon.vue";
 
 export default {
@@ -42,14 +56,21 @@ export default {
     };
   },
   computed: {
+    ...mapState('auth', ['username', 'isAuthenticated']),
     themeIcon() {
       return this.isDark ? "mdi-weather-sunny" : "mdi-weather-night";
     },
   },
   methods: {
+    ...mapActions('auth', ['signOut']),
     toggleTheme() {
       this.isDark = !this.isDark;
       this.$vuetify.theme.dark = this.isDark;
+    },
+    handleSignOut() {
+      this.signOut();
+      // Reload the page to clear all state
+      window.location.reload();
     },
   },
 };

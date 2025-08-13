@@ -3,6 +3,7 @@ import Vuex, { Store } from "vuex";
 import fileQueueModule from "./modules/fileQueue";
 import uploadedFilesModule from "./modules/uploadedFiles";
 import uploadServiceModule from "./modules/uploadService";
+import authModule from "./modules/auth";
 
 Vue.use(Vuex);
 
@@ -32,6 +33,7 @@ const createStore = (): Store<RootState> => {
       fileQueue: fileQueueModule,
       uploadedFiles: uploadedFilesModule,
       uploadService: uploadServiceModule,
+      auth: authModule,
     },
   });
 };

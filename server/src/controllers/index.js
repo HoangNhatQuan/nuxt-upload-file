@@ -1,15 +1,19 @@
 const { getHealth, getConfig } = require("./configController");
-const { getFiles, getFileSignedUrl } = require("./fileListController");
-const { uploadFiles, uploadSingleFile } = require("./fileUploadController");
-const { deleteFiles, deleteSingleFile } = require("./fileDeleteController");
+const {
+  deleteUserFile,
+  getUserFileUrl,
+  getUserFiles,
+  uploadUserFile,
+} = require("./userFileController");
+const { signin, signup } = require("./authController");
 
 module.exports = {
   getHealth,
   getConfig,
-  getFiles,
-  uploadFiles,
-  uploadSingleFile,
-  getFileSignedUrl,
-  deleteFiles,
-  deleteSingleFile,
+  deleteUserFile,
+  getUserFileUrl,
+  getUserFiles,
+  uploadUserFile,
+  signin,
+  signup,
 };

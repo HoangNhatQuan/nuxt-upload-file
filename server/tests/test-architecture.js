@@ -84,7 +84,7 @@ const tests = [
   {
     name: "Backward Compatibility",
     test: () => {
-      const fileController = require("../src/controllers/fileController");
+      const fileController = require("../src/controllers");
 
       // All original functions should still be available
       assert(typeof fileController.getHealth === "function");

@@ -11,6 +11,8 @@
     "dev": "nodemon src/server.js",
     "test:supabase": "node tests/test-supabase.js",
     "test:upload": "node tests/test-upload.js",
+    "test:auth": "node tests/test-auth.js",
+    "test:mongodb": "node tests/test-mongodb.js",
     "check:node": "node -e \"const v=process.version; const major=parseInt(v.slice(1).split('.')[0]); if(major<20){console.error('❌ Node.js 20+ required. Current version:', v); process.exit(1);} else {console.log('✅ Node.js version:', v);}\"",
     "fix:rls": "node tests/fix-rls.js",
     "list:buckets": "node tests/list-buckets.js",
@@ -29,11 +31,14 @@
     "fs-extra": "^11.1.1",
     "dotenv": "^16.3.1",
     "uuid": "^9.0.1",
-    "form-data": "^4.0.0"
+    "form-data": "^4.0.0",
+    "mongoose": "^8.0.3",
+    "bcrypt": "^5.1.1"
   },
   "devDependencies": {
     "nodemon": "^3.0.2",
-    "eslint": "^8.0.0"
+    "eslint": "^8.0.0",
+    "axios": "^1.6.2"
   },
   "keywords": [
     "file-upload",

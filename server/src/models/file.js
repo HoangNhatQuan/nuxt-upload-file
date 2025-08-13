@@ -9,6 +9,10 @@ const generateKey = (originalName) => {
   return `${uuid}${ext}`;
 };
 
+const calculateChecksum = (buffer) => {
+  return crypto.createHash("md5").update(buffer).digest("hex");
+};
+
 // Upload file to Supabase storage
 const uploadFile = async ({
   file,
@@ -22,7 +26,7 @@ const uploadFile = async ({
 
     const { data, error } = await supabase.storage
       .from(BUCKET_NAME)
-      .upload(key, file.buffer, {
+      .upload(key, calculateChecksum(file.buffer), {
         contentType: contentType,
         metadata: {
           originalName: file.originalname,
@@ -142,15 +146,6 @@ const listFiles = async ({
 // Get file metadata
 const getFileMetadata = async (key) => {
   try {
-    const { data, error } = await supabase.storage
-      .from(BUCKET_NAME)
-      .getPublicUrl(key);
-
-    if (error) {
-      throw new Error(`Failed to get file metadata: ${error.message}`);
-    }
-
-    // Get additional metadata from the file
     const { data: listData } = await supabase.storage
       .from(BUCKET_NAME)
       .list(path.dirname(key), {
