@@ -1,14 +1,10 @@
-// File utility functions that mirror the client's useFileUtils composable
-
 interface FileValidationResult {
   isValid: boolean;
   error?: string;
 }
 
 export const fileUtils = {
-  // File validation
   validateFile(file: File): FileValidationResult {
-    // Check file size (5MB limit)
     const maxSize = 5 * 1024 * 1024; // 5MB
     if (file.size > maxSize) {
       return {
@@ -17,7 +13,6 @@ export const fileUtils = {
       };
     }
 
-    // Check file type (optional - you can customize this)
     const allowedTypes = [
       "image/",
       "video/",
@@ -45,7 +40,6 @@ export const fileUtils = {
     return { isValid: true };
   },
 
-  // Generate preview for images and videos
   generatePreview(file: File): Promise<string> {
     return new Promise((resolve) => {
       if (file.type.startsWith("image/") || file.type.startsWith("video/")) {
@@ -63,7 +57,6 @@ export const fileUtils = {
     });
   },
 
-  // Format file size
   formatFileSize(bytes: number): string {
     if (bytes === 0) return "0 Bytes";
 
@@ -74,7 +67,6 @@ export const fileUtils = {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   },
 
-  // Generate unique file name
   generateUniqueFileName(originalName: string): string {
     const nameParts = originalName.split(".");
     const ext = nameParts.pop();
@@ -82,7 +74,6 @@ export const fileUtils = {
     return `${baseName}_${Date.now()}.${ext}`;
   },
 
-  // Get file icon based on type
   getFileIcon(mimeType: string): string {
     if (!mimeType) return "mdi-file";
     if (mimeType.startsWith("image/")) return "mdi-image";
@@ -97,12 +88,10 @@ export const fileUtils = {
     return "mdi-file";
   },
 
-  // Validate multiple files
   validateFiles(files: File[]): FileValidationResult[] {
     return files.map(this.validateFile);
   },
 
-  // Check if all files are valid
   areAllFilesValid(files: File[]): boolean {
     return files.every((file) => this.validateFile(file).isValid);
   },

@@ -28,7 +28,7 @@ const fileQueueModule: Module<FileQueueModuleState, any> = {
       const totalProgress = state.queuedFiles.reduce((sum, file) => sum + file.progress, 0);
       return Math.round(totalProgress / state.queuedFiles.length);
     },
-    queuedFiles: (state) => state.queuedFiles, // Added for progress simulation
+    queuedFiles: (state) => state.queuedFiles,
   },
 
   mutations: {

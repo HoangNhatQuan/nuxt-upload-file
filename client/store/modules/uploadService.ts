@@ -24,7 +24,6 @@ const uploadServiceModule: Module<UploadServiceState, any> = {
       const fileId = queuedFile.id;
       
       try {
-        // Update file status to uploading
         dispatch('fileQueue/updateFileStatus', { 
           fileId, 
           status: FileStatus.UPLOADING, 
@@ -38,8 +37,6 @@ const uploadServiceModule: Module<UploadServiceState, any> = {
         return uploadedFile;
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Upload failed';
-        
-        // Update file status to error
         dispatch('fileQueue/updateFileStatus', { 
           fileId, 
           status: FileStatus.ERROR, 
