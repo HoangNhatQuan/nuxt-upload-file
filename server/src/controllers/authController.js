@@ -9,7 +9,6 @@ const signup = async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    // Validate required fields
     if (!username || !password) {
       return res.status(400).json({
         success: false,
@@ -17,7 +16,6 @@ const signup = async (req, res) => {
       });
     }
 
-    // Validate username format
     if (!/^[a-zA-Z0-9_-]{3,50}$/.test(username)) {
       return res.status(400).json({
         success: false,
@@ -26,10 +24,8 @@ const signup = async (req, res) => {
       });
     }
 
-    // Create user
     const user = await userService.createUser(username, password);
 
-    // Return success response
     res.status(201).json({
       success: true,
       data: {
@@ -40,7 +36,6 @@ const signup = async (req, res) => {
   } catch (error) {
     console.error("Signup error:", error);
 
-    // Handle specific errors
     if (error.message === "Username already exists") {
       return res.status(409).json({
         success: false,
@@ -55,7 +50,6 @@ const signup = async (req, res) => {
       });
     }
 
-    // Generic error
     res.status(500).json({
       success: false,
       error: "Internal server error",
@@ -72,7 +66,6 @@ const signin = async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    // Validate required fields
     if (!username || !password) {
       return res.status(400).json({
         success: false,
@@ -80,10 +73,8 @@ const signin = async (req, res) => {
       });
     }
 
-    // Authenticate user
     const user = await userService.authenticateUser(username, password);
 
-    // Return success response
     res.status(200).json({
       success: true,
       data: {
@@ -94,7 +85,6 @@ const signin = async (req, res) => {
   } catch (error) {
     console.error("Signin error:", error);
 
-    // Handle authentication errors
     if (error.message === "Invalid username or password") {
       return res.status(401).json({
         success: false,
@@ -102,7 +92,6 @@ const signin = async (req, res) => {
       });
     }
 
-    // Generic error
     res.status(500).json({
       success: false,
       error: "Internal server error",

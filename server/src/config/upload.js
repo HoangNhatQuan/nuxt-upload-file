@@ -1,6 +1,6 @@
 // Cloud storage configuration
 const CLOUD_MAX_FILE_BYTES =
-  parseInt(process.env.CLOUD_MAX_FILE_BYTES) || 50 * 1024 * 1024; // 50MB default
+  parseInt(process.env.CLOUD_MAX_FILE_BYTES) || 5 * 1024 * 1024; // 5MB default
 const CLOUD_PROVIDER = process.env.CLOUD_PROVIDER || "supabase";
 
 // Allowed MIME types by category

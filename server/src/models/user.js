@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 const { v4: uuidv4 } = require("uuid");
 
-// FileItem schema (embedded in User)
 const fileItemSchema = new mongoose.Schema(
   {
     id: {
@@ -44,7 +43,6 @@ const fileItemSchema = new mongoose.Schema(
   { _id: false }
 );
 
-// User schema
 const userSchema = new mongoose.Schema(
   {
     username: {

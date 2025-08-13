@@ -25,9 +25,9 @@ const upload = multer({
   storage: storage,
   fileFilter: fileFilter,
   limits: {
-    fileSize: CLOUD_MAX_FILE_BYTES, // 50MB limit
-    files: 10, // Allow up to 10 files per request
-    fieldSize: 10 * 1024 * 1024, // 10MB for field data
+    fileSize: CLOUD_MAX_FILE_BYTES,
+    files: 10,
+    fieldSize: 10 * 1024 * 1024,
   },
 });
 

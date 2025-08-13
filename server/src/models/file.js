@@ -2,14 +2,12 @@ const { supabase, BUCKET_NAME } = require("../config/database");
 const { v4: uuidv4 } = require("uuid");
 const path = require("path");
 
-// Generate a stable key strategy: uuid.ext
 const generateKey = (originalName) => {
   const ext = path.extname(originalName);
   const uuid = uuidv4();
   return `${uuid}${ext}`;
 };
 
-// Upload file to Supabase storage
 const uploadFile = async ({
   file,
   contentType,
@@ -37,7 +35,6 @@ const uploadFile = async ({
       throw new Error(`Upload failed: ${error.message}`);
     }
 
-    // Get signed URL for immediate access
     const { data: urlData } = await supabase.storage
       .from(BUCKET_NAME)
       .createSignedUrl(key, 15 * 60); // 15 minutes
@@ -57,7 +54,6 @@ const uploadFile = async ({
   }
 };
 
-// Remove files from Supabase storage
 const removeFiles = async (keys) => {
   try {
     const results = [];
@@ -79,7 +75,6 @@ const removeFiles = async (keys) => {
   }
 };
 
-// Get signed URL for file access
 const getFileUrl = async (key, expiresIn = 15 * 60) => {
   try {
     const { data, error } = await supabase.storage
@@ -97,7 +92,6 @@ const getFileUrl = async (key, expiresIn = 15 * 60) => {
   }
 };
 
-// List files with pagination and filtering
 const listFiles = async ({
   prefix = "",
   limit = 50,
@@ -117,7 +111,6 @@ const listFiles = async ({
       throw new Error(`Failed to list files: ${error.message}`);
     }
 
-    // Transform the data to match our API contract
     const items = data.map((file) => ({
       key: file.name,
       name: file.name,
@@ -139,7 +132,6 @@ const listFiles = async ({
   }
 };
 
-// Get file metadata
 const getFileMetadata = async (key) => {
   try {
     const { data: listData } = await supabase.storage

@@ -37,9 +37,8 @@ const uploadUserFile = async (req, res) => {
           checksum: checksum,
         });
 
-        // Create file item for user
         const fileItem = {
-          id: uploadResult.key.split(".")[0], // Use the UUID part as ID
+          id: uploadResult.key.split(".")[0],
           path: uploadResult.key,
           bucket: BUCKET_NAME,
           size: uploadResult.size,
@@ -54,7 +53,6 @@ const uploadUserFile = async (req, res) => {
           },
         };
 
-        // Add file to user's files array
         await userService.addFileToUser(username, fileItem);
 
         results.push({
@@ -120,7 +118,6 @@ const getUserFiles = async (req, res) => {
           });
 
         if (fileExists && fileExists.length > 0) {
-          // Get fresh signed URL
           const signedUrl = await getFileUrl(file.path, 15 * 60);
 
           existingFiles.push({
@@ -211,7 +208,6 @@ const getUserFileUrl = async (req, res) => {
     const { id } = req.params;
     const expiresIn = parseInt(req.query.expiresIn) || 15 * 60;
 
-    // Find file in user's files
     const fileItem = await userService.findUserFileById(username, id);
 
     if (!fileItem) {
@@ -221,7 +217,6 @@ const getUserFileUrl = async (req, res) => {
       });
     }
 
-    // Get signed URL
     const signedUrl = await getFileUrl(fileItem.path, expiresIn);
 
     res.json({
